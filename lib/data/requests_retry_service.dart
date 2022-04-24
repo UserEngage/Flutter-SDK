@@ -13,7 +13,7 @@ class RequestsRetryService {
     for (final element in cachedRequests) {
       final requestOption = RequestOptionsSerializer.fromJson(element.object);
 
-      Dio().fetch(requestOption).then(
+      await Dio().fetch<Response>(requestOption).then(
         (response) {
           if (response.statusCode == 200) {
             cacheRepository.removeRequest(key: element.key);

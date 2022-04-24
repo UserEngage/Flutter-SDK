@@ -44,7 +44,7 @@ class ProductEvent {
       'event': eventName,
       'timestamp': timestamp.toIso8601String(),
       'event_type': _mapEventTypeToApiName(eventType),
-      'data': {
+      'data': <String, dynamic>{
         'custom_id': productId,
         ...parameters,
       }

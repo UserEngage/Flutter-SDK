@@ -1,4 +1,24 @@
 include: package:flutter_lints/flutter.yaml
 
-# Additional information about this file can be found at
-# https://dart.dev/guides/language/analysis-options
+analyzer:
+  enable-experiment:
+    - non-nullable
+
+  strong-mode:
+    implicit-dynamic: false
+
+  exclude:
+    - "**/*.g.dart"
+    - "**/*.ast.gql.dart"
+    - "**/*.freezed.dart"
+    - "**/*.gen.dart"
+    - "**/injection.config.dart"
+    - "lib/generated/**"
+    - "lib/generated_plugin_registrant.dart"
+
+linter:
+  rules:
+    unawaited_futures: true
+    require_trailing_commas: true
+    sort_pub_dependencies: false
+    avoid_dynamic_calls: false

@@ -23,9 +23,9 @@ class Customer {
     this.email,
   });
 
-  final Map<String, dynamic> _attributes = {};
+  final _attributes = <String, dynamic>{};
 
-  addCustomAttribute(String name, dynamic value) {
+  void addCustomAttribute(String name, dynamic value) {
     assert(
       value is String || value is bool || value is int,
       'Value must be primary type - string, bool or int',

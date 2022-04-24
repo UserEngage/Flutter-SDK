@@ -15,11 +15,11 @@ class CacheRepository {
   Future<void> initialize() async {
     final directory = await getApplicationDocumentsDirectory();
     Hive.init(directory.path);
-    await Hive.openBox(requestsCacheBox);
-    await Hive.openBox(userCacheBox);
+    await Hive.openBox<dynamic>(requestsCacheBox);
+    await Hive.openBox<dynamic>(userCacheBox);
 
-    requestsBox = Hive.box(requestsCacheBox);
-    box = Hive.box(userCacheBox);
+    requestsBox = Hive.box<dynamic>(requestsCacheBox);
+    box = Hive.box<dynamic>(userCacheBox);
   }
 
   void saveInvalidRequest(Map<String, dynamic> jsonRequest) {

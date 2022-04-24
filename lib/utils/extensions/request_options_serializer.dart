@@ -36,7 +36,7 @@ extension RequestOptionsSerializer on RequestOptions {
       connectTimeout: json['connectTimeout'] ?? 0,
       data: json['data'],
       path: json['path'],
-      queryParameters: json['queryParameters'] ?? {},
+      queryParameters: json['queryParameters'] ?? <String, dynamic>{},
       baseUrl: json['baseUrl'] ?? '',
       extra: json['extra'],
       headers: json['headers'],
