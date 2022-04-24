@@ -52,6 +52,11 @@ class CacheRepository {
   String? getUserKey() {
     return box.get(userKeyKey);
   }
+
+  Future<void> clearStorage() async {
+    await box.clear();
+    await requestsBox.clear();
+  }
 }
 
 class _HiveObject {

@@ -5,6 +5,7 @@ import 'package:flutter_user_sdk/data/user_api_service.dart';
 import 'package:flutter_user_sdk/models/customer.dart';
 import 'package:flutter_user_sdk/models/customer_extended_info.dart';
 import 'package:flutter_user_sdk/models/events/custom_event.dart';
+import 'package:flutter_user_sdk/models/events/logout_event.dart';
 import 'package:flutter_user_sdk/models/events/product_event.dart';
 import 'package:flutter_user_sdk/models/events/screen_event.dart';
 
@@ -52,6 +53,12 @@ class Repository {
   Future<void> sendProductEvent(ProductEvent event) async {
     try {
       await service.postProductEvent(event);
+    } catch (_) {}
+  }
+
+  Future<void> logoutUser() async {
+    try {
+      await service.logoutEvent(const LogoutEvent());
     } catch (_) {}
   }
 

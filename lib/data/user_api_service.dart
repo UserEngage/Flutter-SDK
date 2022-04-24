@@ -3,6 +3,7 @@ import 'package:flutter_user_sdk/data/cache_repository.dart';
 import 'package:flutter_user_sdk/data/interceptors/request_handler_interceptor.dart';
 import 'package:flutter_user_sdk/models/customer_extended_info.dart';
 import 'package:flutter_user_sdk/models/events/custom_event.dart';
+import 'package:flutter_user_sdk/models/events/logout_event.dart';
 import 'package:flutter_user_sdk/models/events/screen_event.dart';
 import 'package:flutter_user_sdk/models/events/product_event.dart';
 import 'package:retrofit/retrofit.dart';
@@ -24,6 +25,9 @@ abstract class UserApiService {
 
   @POST('/api/sdk/v1/product_event/')
   Future<void> postProductEvent(@Body() ProductEvent body);
+
+  @POST('/api/sdk/v1/event/')
+  Future<void> logoutEvent(@Body() LogoutEvent body);
 
   static UserApiService create({
     required String mobileSdkKey,

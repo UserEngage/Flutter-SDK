@@ -82,6 +82,11 @@ class UserSDK {
     await _repository.sendProductEvent(event);
   }
 
+  Future<void> logoutUser() async {
+    await _repository.logoutUser();
+    await _cacheRepository.clearStorage();
+  }
+
   void _setupClient() {
     final service = UserApiService.create(
       cacheRepository: _cacheRepository,
