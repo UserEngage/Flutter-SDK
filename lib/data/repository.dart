@@ -20,6 +20,7 @@ class Repository {
 
   Future<void> postUserDeviceInfo({
     String? userKey,
+    Customer? customer,
     required Map<String, dynamic> deviceInfo,
   }) async {
     try {
@@ -27,7 +28,8 @@ class Repository {
 
       final result = await service.postPing(
         CustomerExtendedInfo(
-          customer: Customer(userKey: key),
+          userKey: key,
+          customer: customer,
           deviceInformation: deviceInfo,
         ),
       );

@@ -6,8 +6,6 @@ part 'customer.g.dart';
 class Customer {
   @JsonKey(name: 'user_id')
   String? userId;
-  @JsonKey(name: 'userKey')
-  String? userKey;
   @JsonKey(name: 'first_name')
   String? firstName;
   @JsonKey(name: 'last_name')
@@ -17,7 +15,6 @@ class Customer {
 
   Customer({
     this.userId,
-    this.userKey,
     this.firstName,
     this.lastName,
     this.email,

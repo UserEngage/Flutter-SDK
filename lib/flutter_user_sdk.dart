@@ -4,6 +4,7 @@ import 'package:flutter_user_sdk/data/cache_repository.dart';
 import 'package:flutter_user_sdk/data/repository.dart';
 import 'package:flutter_user_sdk/data/requests_retry_service.dart';
 import 'package:flutter_user_sdk/data/user_api_service.dart';
+import 'package:flutter_user_sdk/models/customer.dart';
 import 'package:flutter_user_sdk/models/events/custom_event.dart';
 import 'package:flutter_user_sdk/models/device_information.dart';
 import 'package:flutter_user_sdk/models/events/product_event.dart';
@@ -44,9 +45,20 @@ class UserSDK {
     RequestsRetryService(_cacheRepository).resendRequests();
   }
 
-  Future<void> registerAnonymousUserSession({String? userKey}) async {
+  Future<void> registerAnonymousUserSession() async {
     await _repository.postUserDeviceInfo(
-      userKey: userKey,
+      //TODO: Get firebase token
+      deviceInfo: await DeviceInformation.getPlatformInformation(
+            fcmToken: '',
+          ) ??
+          <String, dynamic>{},
+    );
+    _setupClient();
+  }
+
+  Future<void> registerUser({Customer? customer}) async {
+    await _repository.postUserDeviceInfo(
+      customer: customer,
       //TODO: Get firebase token
       deviceInfo: await DeviceInformation.getPlatformInformation(
             fcmToken: '',
