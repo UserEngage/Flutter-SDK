@@ -61,11 +61,4 @@ class Repository {
       await service.logoutEvent(const LogoutEvent());
     } catch (_) {}
   }
-
-  // Future<void> register(Customer customer) async {
-  //   final result = await userClient.dio.post(
-  //     _REGISTER_ENDPOINT,
-  //     data: <String, dynamic>{},
-  //   );
-  // }
 }

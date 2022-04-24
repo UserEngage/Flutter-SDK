@@ -47,6 +47,7 @@ class UserSDK {
   Future<void> registerAnonymousUserSession({String? userKey}) async {
     await _repository.postUserDeviceInfo(
       userKey: userKey,
+      //TODO: Get firebase token
       deviceInfo: await DeviceInformation.getPlatformInformation(
             fcmToken: '',
           ) ??
@@ -62,7 +63,6 @@ class UserSDK {
     await _repository.sendCustomEvent(
       CustomEvent(
         event: eventName,
-        timestamp: DateTime.now(),
         data: data,
       ),
     );
@@ -101,6 +101,4 @@ class UserSDK {
       cacheRepository: _cacheRepository,
     );
   }
-
-  // void register(Customer customer) {}
 }

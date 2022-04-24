@@ -7,6 +7,8 @@ class RequestsRetryService {
 
   RequestsRetryService(this.cacheRepository);
 
+  //TODO: Implement periodic task
+
   void resendRequests() async {
     final cachedRequests = cacheRepository.getCachedRequests();
 
