@@ -5,7 +5,8 @@ import 'package:flutter_user_sdk/data/user_api_service.dart';
 import 'package:flutter_user_sdk/models/customer.dart';
 import 'package:flutter_user_sdk/models/customer_extended_info.dart';
 import 'package:flutter_user_sdk/models/events/custom_event.dart';
-import 'package:flutter_user_sdk/models/events/predefined/screen_event.dart';
+import 'package:flutter_user_sdk/models/events/product_event.dart';
+import 'package:flutter_user_sdk/models/events/screen_event.dart';
 
 class Repository {
   final UserApiService service;
@@ -16,7 +17,7 @@ class Repository {
     required this.cacheRepository,
   });
 
-  Future<String?> postUserDeviceInfo({
+  Future<void> postUserDeviceInfo({
     String? userKey,
     required Map<String, dynamic> deviceInfo,
   }) async {
@@ -34,7 +35,6 @@ class Repository {
         jsonDecode(result)['user']['key'] as String,
       );
     } catch (_) {}
-    return null;
   }
 
   Future<void> sendCustomEvent(CustomEvent event) async {
@@ -46,6 +46,12 @@ class Repository {
   Future<void> sendScreenEvent(ScreenEvent event) async {
     try {
       await service.postScreenEvent(event);
+    } catch (_) {}
+  }
+
+  Future<void> sendProductEvent(ProductEvent event) async {
+    try {
+      await service.postProductEvent(event);
     } catch (_) {}
   }
 

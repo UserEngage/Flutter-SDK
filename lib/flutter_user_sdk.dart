@@ -5,8 +5,9 @@ import 'package:flutter_user_sdk/data/repository.dart';
 import 'package:flutter_user_sdk/data/requests_retry_service.dart';
 import 'package:flutter_user_sdk/data/user_api_service.dart';
 import 'package:flutter_user_sdk/models/events/custom_event.dart';
-import 'package:flutter_user_sdk/models/events/predefined/device_information.dart';
-import 'package:flutter_user_sdk/models/events/predefined/screen_event.dart';
+import 'package:flutter_user_sdk/models/device_information.dart';
+import 'package:flutter_user_sdk/models/events/product_event.dart';
+import 'package:flutter_user_sdk/models/events/screen_event.dart';
 
 class UserSDK {
   static UserSDK get instance => _getOrCreateInstance();
@@ -73,6 +74,12 @@ class UserSDK {
     await _repository.sendScreenEvent(
       ScreenEvent(screenName: screenName),
     );
+  }
+
+  Future<void> sendProductEvent({
+    required ProductEvent event,
+  }) async {
+    await _repository.sendProductEvent(event);
   }
 
   void _setupClient() {
