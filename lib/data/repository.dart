@@ -5,6 +5,7 @@ import 'package:flutter_user_sdk/data/user_api_service.dart';
 import 'package:flutter_user_sdk/models/customer.dart';
 import 'package:flutter_user_sdk/models/customer_extended_info.dart';
 import 'package:flutter_user_sdk/models/events/custom_event.dart';
+import 'package:flutter_user_sdk/models/events/predefined/screen_event.dart';
 
 class Repository {
   final UserApiService service;
@@ -39,6 +40,12 @@ class Repository {
   Future<void> sendCustomEvent(CustomEvent event) async {
     try {
       await service.postEvent(event);
+    } catch (_) {}
+  }
+
+  Future<void> sendScreenEvent(ScreenEvent event) async {
+    try {
+      await service.postScreenEvent(event);
     } catch (_) {}
   }
 
