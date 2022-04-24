@@ -1,7 +1,10 @@
 library flutter_user_sdk;
 
+import 'package:flutter_user_sdk/data/cache_repository.dart';
 import 'package:flutter_user_sdk/data/repository.dart';
+import 'package:flutter_user_sdk/data/requests_retry_service.dart';
 import 'package:flutter_user_sdk/data/user_api_service.dart';
+import 'package:flutter_user_sdk/models/events/custom_event.dart';
 import 'package:flutter_user_sdk/models/events/predefined/device_information.dart';
 
 class UserSDK {
@@ -14,24 +17,31 @@ class UserSDK {
     return _instance!;
   }
 
+  late String _mobileSdkKey;
+
+  late String _integrationsApiKey;
+
+  late String _appDomain;
+
   late Repository _repository;
 
-  void setup({
+  late CacheRepository _cacheRepository;
+
+  Future<void> initialize({
     required String mobileSdkKey,
     required String integrationsApiKey,
     required String appDomain,
   }) async {
-    final service = UserApiService.create(
-      mobileSdkKey: mobileSdkKey,
-      integrationsApiKey: integrationsApiKey,
-      appDomain: appDomain,
-    );
+    _mobileSdkKey = mobileSdkKey;
+    _integrationsApiKey = integrationsApiKey;
+    _appDomain = appDomain;
 
-    _repository = Repository(service: service);
+    _cacheRepository = CacheRepository();
+    await _cacheRepository.initialize();
+    _setupClient();
+    RequestsRetryService(_cacheRepository).resendRequests();
   }
 
-  // // generates new anonymous user
-  // // provide userKey from previous session if You want refer to the same user
   Future<void> registerAnonymousUserSession({String? userKey}) async {
     await _repository.postUserDeviceInfo(
       userKey: userKey,
@@ -40,6 +50,7 @@ class UserSDK {
           ) ??
           <String, dynamic>{},
     );
+    _setupClient();
   }
 
   Future<void> sendCustomEvent({
@@ -47,8 +58,26 @@ class UserSDK {
     required Map<String, dynamic> data,
   }) async {
     await _repository.sendCustomEvent(
-      eventName: eventName,
-      data: data,
+      CustomEvent(
+        event: eventName,
+        timestamp: DateTime.now(),
+        data: data,
+      ),
+    );
+  }
+
+  void _setupClient() {
+    final service = UserApiService.create(
+      cacheRepository: _cacheRepository,
+      mobileSdkKey: _mobileSdkKey,
+      integrationsApiKey: _integrationsApiKey,
+      appDomain: _appDomain,
+      userKey: _cacheRepository.getUserKey(),
+    );
+
+    _repository = Repository(
+      service: service,
+      cacheRepository: _cacheRepository,
     );
   }
 

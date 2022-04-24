@@ -1,27 +1,26 @@
 import 'package:dio/dio.dart';
+import 'package:flutter_user_sdk/data/cache_repository.dart';
 import 'package:flutter_user_sdk/utils/extensions/request_options_serializer.dart';
 
 class RequestHandlerInterceptor implements Interceptor {
   final String mobileSdkKey;
   final String? userKey;
+  final CacheRepository cacheRepository;
   final Map<String, String> customHeaders;
 
   RequestHandlerInterceptor({
     required this.mobileSdkKey,
+    required this.cacheRepository,
     this.userKey,
   }) : customHeaders = <String, String>{
           'Content-Type': 'application/json',
           'Authorization': 'Token $mobileSdkKey',
-          'userKey': userKey ?? '',
+          'X-User-Key': userKey ?? '',
         };
-
-  late RequestOptions? _currentRequestOptions;
 
   @override
   void onRequest(RequestOptions options, RequestInterceptorHandler handler) {
     options.headers.addAll(customHeaders);
-
-    _currentRequestOptions = options;
 
     return handler.next(options);
   }
@@ -29,12 +28,9 @@ class RequestHandlerInterceptor implements Interceptor {
   @override
   void onError(DioError err, ErrorInterceptorHandler handler) {
     if (err.type != DioErrorType.response) {
-      final jsonOptions = _currentRequestOptions!.toJson();
+      final jsonOptions = err.requestOptions.toJson();
 
-      final newRequestOptionsObject =
-          RequestOptionsSerializer.fromJson(jsonOptions);
-
-      //TODO: Save requestOption to database with extended object - timestamp and retries
+      cacheRepository.saveInvalidRequest(jsonOptions);
     }
     return handler.next(err);
   }

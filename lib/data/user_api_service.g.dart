@@ -16,33 +16,35 @@ class _UserApiService implements UserApiService {
   String? baseUrl;
 
   @override
-  Future<void> postPing(body) async {
+  Future<String> postPing(body) async {
     const _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
     final _headers = <String, dynamic>{};
     final _data = <String, dynamic>{};
-    _data.addAll(body);
-    await _dio.fetch<void>(_setStreamType<void>(
+    _data.addAll(body.toJson());
+    final _result = await _dio.fetch<String>(_setStreamType<String>(
         Options(method: 'POST', headers: _headers, extra: _extra)
             .compose(_dio.options, '/api/sdk/v1/ping/',
                 queryParameters: queryParameters, data: _data)
             .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
-    return null;
+    final value = _result.data!;
+    return value;
   }
 
   @override
-  Future<void> postEvent(body) async {
+  Future<String> postEvent(body) async {
     const _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
     final _headers = <String, dynamic>{};
     final _data = <String, dynamic>{};
-    _data.addAll(body);
-    await _dio.fetch<void>(_setStreamType<void>(
+    _data.addAll(body.toJson());
+    final _result = await _dio.fetch<String>(_setStreamType<String>(
         Options(method: 'POST', headers: _headers, extra: _extra)
             .compose(_dio.options, '/api/sdk/v1/event/',
                 queryParameters: queryParameters, data: _data)
             .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
-    return null;
+    final value = _result.data!;
+    return value;
   }
 
   RequestOptions _setStreamType<T>(RequestOptions requestOptions) {

@@ -1,45 +1,44 @@
+import 'dart:convert';
+
+import 'package:flutter_user_sdk/data/cache_repository.dart';
 import 'package:flutter_user_sdk/data/user_api_service.dart';
+import 'package:flutter_user_sdk/models/customer.dart';
+import 'package:flutter_user_sdk/models/customer_extended_info.dart';
+import 'package:flutter_user_sdk/models/events/custom_event.dart';
 
 class Repository {
   final UserApiService service;
-  Repository({required this.service});
+  final CacheRepository cacheRepository;
+
+  Repository({
+    required this.service,
+    required this.cacheRepository,
+  });
 
   Future<String?> postUserDeviceInfo({
     String? userKey,
     required Map<String, dynamic> deviceInfo,
   }) async {
     try {
-      //TODO: Create model for postPing argument
+      final key = userKey ?? cacheRepository.getUserKey();
+
       final result = await service.postPing(
-        <String, dynamic>{
-          "customer": {
-            "userKey": userKey,
-          },
-          "device": deviceInfo
-        },
+        CustomerExtendedInfo(
+          customer: Customer(userKey: key),
+          deviceInformation: deviceInfo,
+        ),
+      );
+
+      cacheRepository.addUserKey(
+        jsonDecode(result)['user']['key'] as String,
       );
     } catch (_) {}
-
-    //TODO: Save returned key to database and use it in ping if already exists
-
     return null;
-
-    //return result.body['user']['key'] as String;
   }
 
-  Future<void> sendCustomEvent({
-    required String eventName,
-    required Map<String, dynamic> data,
-  }) async {
+  Future<void> sendCustomEvent(CustomEvent event) async {
     try {
-      //TODO: Create model for postEvent argument
-      final result = await service.postEvent(
-        <String, dynamic>{
-          "event": eventName,
-          "timestamp": DateTime.now().toIso8601String(),
-          "data": data,
-        },
-      );
+      await service.postEvent(event);
     } catch (_) {}
   }
 

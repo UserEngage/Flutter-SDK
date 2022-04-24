@@ -72,6 +72,7 @@ abstract class DeviceInformation {
         identifier: await AdvertisingId.id(true) ?? 'Permission not granted',
       ).toJson();
     }
+    return null;
   }
 }
 
@@ -102,6 +103,9 @@ class DeviceAndroidInformation extends DeviceInformation {
         );
 
   Map<String, dynamic> toJson() => _$DeviceAndroidInformationToJson(this);
+
+  factory DeviceAndroidInformation.fromJson(Map<String, dynamic> json) =>
+      _$DeviceAndroidInformationFromJson(json);
 }
 
 @JsonSerializable()
@@ -130,4 +134,7 @@ class DeviceIosInformation extends DeviceInformation {
         );
 
   Map<String, dynamic> toJson() => _$DeviceIosInformationToJson(this);
+
+  factory DeviceIosInformation.fromJson(Map<String, dynamic> json) =>
+      _$DeviceIosInformationFromJson(json);
 }

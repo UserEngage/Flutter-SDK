@@ -1,25 +1,25 @@
-import 'dart:convert';
 import 'package:dio/dio.dart';
+import 'package:flutter_user_sdk/data/cache_repository.dart';
 import 'package:flutter_user_sdk/utils/extensions/request_options_serializer.dart';
-import 'package:hive/hive.dart';
-
-//TODO: Work in progress
-final requestsBox = Hive.box('userSDKRequests');
-final box = Hive.box('userSDKuserKey');
 
 class RequestsRetryService {
-  void initialize() async {
-    await Hive.openBox('userSDKRequests');
-  }
+  final CacheRepository cacheRepository;
+
+  RequestsRetryService(this.cacheRepository);
 
   void resendRequests() async {
-    if (requestsBox.values.isEmpty) return;
+    final cachedRequests = cacheRepository.getCachedRequests();
 
-    for (final element in requestsBox.values) {
-      final requestJson = jsonDecode(element as String);
-      final requestOption = RequestOptionsSerializer.fromJson(requestJson);
+    for (final element in cachedRequests) {
+      final requestOption = RequestOptionsSerializer.fromJson(element.object);
 
-      Dio().fetch(requestOption);
+      Dio().fetch(requestOption).then(
+        (response) {
+          if (response.statusCode == 200) {
+            cacheRepository.removeRequest(key: element.key);
+          }
+        },
+      );
     }
   }
 }

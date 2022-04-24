@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 class CustomEvent {
   final String event;
   final DateTime timestamp;
@@ -10,24 +8,19 @@ class CustomEvent {
     required this.data,
   });
 
-  Map<String, dynamic> toMap() {
-    return {
+  Map<String, dynamic> toJson() {
+    return <String, dynamic>{
       'event': event,
-      'timestamp': timestamp.millisecondsSinceEpoch,
+      'timestamp': timestamp.toIso8601String(),
       'data': data,
     };
   }
 
-  factory CustomEvent.fromMap(Map<String, dynamic> map) {
+  factory CustomEvent.fromJson(Map<String, dynamic> json) {
     return CustomEvent(
-      event: map['event'] ?? '',
-      timestamp: DateTime.fromMillisecondsSinceEpoch(map['timestamp']),
-      data: Map<String, dynamic>.from(map['data']),
+      event: json['event'] as String? ?? '',
+      timestamp: DateTime.fromMillisecondsSinceEpoch(json['timestamp'] as int),
+      data: Map<String, dynamic>.from(json['data'] as Map<String, dynamic>),
     );
   }
-
-  String toJson() => json.encode(toMap());
-
-  factory CustomEvent.fromJson(String source) =>
-      CustomEvent.fromMap(json.decode(source));
 }
