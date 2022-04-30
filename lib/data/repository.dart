@@ -4,7 +4,9 @@ import 'package:flutter_user_sdk/data/cache_repository.dart';
 import 'package:flutter_user_sdk/data/user_api_service.dart';
 import 'package:flutter_user_sdk/models/customer.dart';
 import 'package:flutter_user_sdk/models/customer_extended_info.dart';
+import 'package:flutter_user_sdk/models/device_information.dart';
 import 'package:flutter_user_sdk/models/events/custom_event.dart';
+import 'package:flutter_user_sdk/models/events/in_app_event.dart';
 import 'package:flutter_user_sdk/models/events/logout_event.dart';
 import 'package:flutter_user_sdk/models/events/product_event.dart';
 import 'package:flutter_user_sdk/models/events/screen_event.dart';
@@ -21,10 +23,14 @@ class Repository {
   Future<void> postUserDeviceInfo({
     String? userKey,
     Customer? customer,
-    required Map<String, dynamic> deviceInfo,
+    String? fcmToken,
   }) async {
     try {
       final key = userKey ?? cacheRepository.getUserKey();
+
+      final deviceInfo = await DeviceInformation.getPlatformInformation(
+        fcmToken: fcmToken,
+      );
 
       final result = await service.postPing(
         CustomerExtendedInfo(
@@ -61,6 +67,16 @@ class Repository {
   Future<void> logoutUser() async {
     try {
       await service.logoutEvent(const LogoutEvent());
+    } catch (_) {}
+  }
+
+  Future<void> sendNotificationEvent({
+    required String id,
+    required InAppEventAction action,
+  }) async {
+    try {
+      final event = InAppEvent(id: id, action: action);
+      await service.inAppEvent(id, event.action.name, event);
     } catch (_) {}
   }
 }

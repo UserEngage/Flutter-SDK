@@ -16,23 +16,32 @@ DeviceAndroidInformation _$DeviceAndroidInformationFromJson(
       device: json['device'] as String,
       model: json['model'] as String,
       manufacturer: json['manufacturer'] as String,
-      fcmToken: json['fcm_key'] as String,
+      fcmToken: json['fcm_key'] as String?,
       isRoot: json['is_root'] as bool,
     );
 
 Map<String, dynamic> _$DeviceAndroidInformationToJson(
-        DeviceAndroidInformation instance) =>
-    <String, dynamic>{
-      'lib_version': instance.libraryVersion,
-      'os_type': instance.osType,
-      'version': instance.version,
-      'sdk': instance.sdk,
-      'device': instance.device,
-      'model': instance.model,
-      'manufacturer': instance.manufacturer,
-      'fcm_key': instance.fcmToken,
-      'is_root': instance.isRoot,
-    };
+    DeviceAndroidInformation instance) {
+  final val = <String, dynamic>{
+    'lib_version': instance.libraryVersion,
+    'os_type': instance.osType,
+    'version': instance.version,
+    'sdk': instance.sdk,
+    'device': instance.device,
+    'model': instance.model,
+    'manufacturer': instance.manufacturer,
+  };
+
+  void writeNotNull(String key, dynamic value) {
+    if (value != null) {
+      val[key] = value;
+    }
+  }
+
+  writeNotNull('fcm_key', instance.fcmToken);
+  val['is_root'] = instance.isRoot;
+  return val;
+}
 
 DeviceIosInformation _$DeviceIosInformationFromJson(
         Map<String, dynamic> json) =>
@@ -44,20 +53,29 @@ DeviceIosInformation _$DeviceIosInformationFromJson(
       device: json['device'] as String,
       model: json['model'] as String,
       manufacturer: json['manufacturer'] as String,
-      fcmToken: json['fcm_key'] as String,
+      fcmToken: json['fcm_key'] as String?,
       identifier: json['identifier'] as String,
     );
 
 Map<String, dynamic> _$DeviceIosInformationToJson(
-        DeviceIosInformation instance) =>
-    <String, dynamic>{
-      'lib_version': instance.libraryVersion,
-      'os_type': instance.osType,
-      'version': instance.version,
-      'sdk': instance.sdk,
-      'device': instance.device,
-      'model': instance.model,
-      'manufacturer': instance.manufacturer,
-      'fcm_key': instance.fcmToken,
-      'identifier': instance.identifier,
-    };
+    DeviceIosInformation instance) {
+  final val = <String, dynamic>{
+    'lib_version': instance.libraryVersion,
+    'os_type': instance.osType,
+    'version': instance.version,
+    'sdk': instance.sdk,
+    'device': instance.device,
+    'model': instance.model,
+    'manufacturer': instance.manufacturer,
+  };
+
+  void writeNotNull(String key, dynamic value) {
+    if (value != null) {
+      val[key] = value;
+    }
+  }
+
+  writeNotNull('fcm_key', instance.fcmToken);
+  val['identifier'] = instance.identifier;
+  return val;
+}

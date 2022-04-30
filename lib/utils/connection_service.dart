@@ -7,14 +7,13 @@ class ConnectionService {
 
   late StreamSubscription _connectionStream;
 
-  static Future<ConnectionService> get instance async =>
-      await _getOrCreateInstance();
+  static ConnectionService get instance => _getOrCreateInstance();
   static ConnectionService? _instance;
 
-  static Future<ConnectionService> _getOrCreateInstance() async {
+  static ConnectionService _getOrCreateInstance() {
     if (_instance != null) return _instance!;
     _instance = ConnectionService();
-    await _instance!.initialize();
+
     return _instance!;
   }
 
@@ -29,6 +28,10 @@ class ConnectionService {
   }
 
   ConnectivityResult get connectionState => _currentConnection;
+
+  bool get isConnected =>
+      _currentConnection == ConnectivityResult.mobile ||
+      _currentConnection == ConnectivityResult.mobile;
 
   void dispose() => _connectionStream.cancel();
 }

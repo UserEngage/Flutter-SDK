@@ -21,6 +21,7 @@ class CustomerExtendedInfo {
         ..addAll(
           <String, dynamic>{
             'userKey': userKey ?? '',
+            'device': 1,
           },
         ),
       'device': deviceInformation,

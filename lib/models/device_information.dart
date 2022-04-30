@@ -22,8 +22,8 @@ abstract class DeviceInformation {
   late String model;
   @JsonKey(name: 'manufacturer')
   String manufacturer;
-  @JsonKey(name: 'fcm_key')
-  final String fcmToken;
+  @JsonKey(name: 'fcm_key', includeIfNull: false)
+  final String? fcmToken;
 
   DeviceInformation({
     required this.libraryVersion,
@@ -33,11 +33,11 @@ abstract class DeviceInformation {
     required this.device,
     required this.model,
     required this.manufacturer,
-    required this.fcmToken,
+    this.fcmToken,
   });
 
-  static Future<Map<String, dynamic>?> getPlatformInformation({
-    required String fcmToken,
+  static Future<Map<String, dynamic>> getPlatformInformation({
+    String? fcmToken,
   }) async {
     if (Platform.isAndroid) {
       final androidInfo = await DeviceInfoPlugin().androidInfo;
@@ -72,7 +72,7 @@ abstract class DeviceInformation {
         identifier: await AdvertisingId.id(true) ?? 'Permission not granted',
       ).toJson();
     }
-    return null;
+    return <String, dynamic>{};
   }
 }
 
@@ -89,7 +89,7 @@ class DeviceAndroidInformation extends DeviceInformation {
     required String device,
     required String model,
     required String manufacturer,
-    required String fcmToken,
+    String? fcmToken,
     required this.isRoot,
   }) : super(
           libraryVersion: libraryVersion,
@@ -120,7 +120,7 @@ class DeviceIosInformation extends DeviceInformation {
     required String device,
     required String model,
     required String manufacturer,
-    required String fcmToken,
+    String? fcmToken,
     required this.identifier,
   }) : super(
           libraryVersion: libraryVersion,

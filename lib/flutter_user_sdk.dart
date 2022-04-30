@@ -1,14 +1,17 @@
 library flutter_user_sdk;
 
+import 'package:flutter/material.dart';
 import 'package:flutter_user_sdk/data/cache_repository.dart';
 import 'package:flutter_user_sdk/data/repository.dart';
 import 'package:flutter_user_sdk/data/requests_retry_service.dart';
 import 'package:flutter_user_sdk/data/user_api_service.dart';
 import 'package:flutter_user_sdk/models/customer.dart';
 import 'package:flutter_user_sdk/models/events/custom_event.dart';
-import 'package:flutter_user_sdk/models/device_information.dart';
 import 'package:flutter_user_sdk/models/events/product_event.dart';
 import 'package:flutter_user_sdk/models/events/screen_event.dart';
+import 'package:flutter_user_sdk/notifications/notification_builder.dart';
+import 'package:flutter_user_sdk/notifications/notification_service.dart';
+import 'package:flutter_user_sdk/utils/connection_service.dart';
 
 class UserSDK {
   static UserSDK get instance => _getOrCreateInstance();
@@ -42,32 +45,28 @@ class UserSDK {
     _cacheRepository = CacheRepository();
     await _cacheRepository.initialize();
 
+    await ConnectionService.instance.initialize();
+
     _setupClient();
-    await registerAnonymousUserSession();
+
+    String? fcmToken;
+
+    await NotificationService.initialize(
+      onTokenReceived: (token) => fcmToken = token,
+    );
+
+    await registerAnonymousUserSession(fcmToken: fcmToken);
 
     RequestsRetryService(_cacheRepository).resendRequests();
   }
 
-  Future<void> registerAnonymousUserSession() async {
-    await _repository.postUserDeviceInfo(
-      //TODO: Get firebase token
-      deviceInfo: await DeviceInformation.getPlatformInformation(
-            fcmToken: '',
-          ) ??
-          <String, dynamic>{},
-    );
+  Future<void> registerAnonymousUserSession({String? fcmToken}) async {
+    await _repository.postUserDeviceInfo(fcmToken: fcmToken);
     _setupClient();
   }
 
   Future<void> registerUser({Customer? customer}) async {
-    await _repository.postUserDeviceInfo(
-      customer: customer,
-      //TODO: Get firebase token
-      deviceInfo: await DeviceInformation.getPlatformInformation(
-            fcmToken: '',
-          ) ??
-          <String, dynamic>{},
-    );
+    await _repository.postUserDeviceInfo(customer: customer);
     _setupClient();
   }
 
@@ -100,6 +99,20 @@ class UserSDK {
   Future<void> logoutUser() async {
     await _repository.logoutUser();
     await _cacheRepository.clearStorage();
+  }
+
+  void buildNotificationOnMessageReceived(BuildContext context) {
+    if (!NotificationService.messageController.hasListener) {
+      NotificationService.messageController.stream.listen(
+        (message) {
+          NotificationBuilder.buildNotification(
+            context: context,
+            repository: _repository,
+            message: message,
+          );
+        },
+      );
+    }
   }
 
   void _setupClient() {
