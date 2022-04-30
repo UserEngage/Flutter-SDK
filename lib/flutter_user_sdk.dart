@@ -22,7 +22,7 @@ class UserSDK {
 
   late String _mobileSdkKey;
 
-  late String _integrationsApiKey;
+  String? _integrationsApiKey;
 
   late String _appDomain;
 
@@ -32,7 +32,7 @@ class UserSDK {
 
   Future<void> initialize({
     required String mobileSdkKey,
-    required String integrationsApiKey,
+    String? integrationsApiKey,
     required String appDomain,
   }) async {
     _mobileSdkKey = mobileSdkKey;
@@ -41,7 +41,10 @@ class UserSDK {
 
     _cacheRepository = CacheRepository();
     await _cacheRepository.initialize();
+
     _setupClient();
+    await registerAnonymousUserSession();
+
     RequestsRetryService(_cacheRepository).resendRequests();
   }
 

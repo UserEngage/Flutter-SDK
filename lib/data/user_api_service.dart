@@ -31,7 +31,7 @@ abstract class UserApiService {
 
   static UserApiService create({
     required String mobileSdkKey,
-    required String integrationsApiKey,
+    String? integrationsApiKey,
     required String appDomain,
     required CacheRepository cacheRepository,
     String? userKey,
