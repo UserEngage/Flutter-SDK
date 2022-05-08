@@ -3,7 +3,6 @@ import 'dart:io';
 import 'package:advertising_id/advertising_id.dart';
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:json_annotation/json_annotation.dart';
-import 'package:root/root.dart';
 
 part 'device_information.g.dart';
 
@@ -36,6 +35,10 @@ abstract class DeviceInformation {
     this.fcmToken,
   });
 
+  static const String unknown = 'Unknown';
+  static const String android = 'Android';
+  static const String ios = 'IOS';
+
   static Future<Map<String, dynamic>> getPlatformInformation({
     String? fcmToken,
   }) async {
@@ -43,33 +46,28 @@ abstract class DeviceInformation {
       final androidInfo = await DeviceInfoPlugin().androidInfo;
 
       return DeviceAndroidInformation(
-        //TODO: Get this from pubspec.yaml
-        libraryVersion: '1',
-        osType: 'Android',
+        libraryVersion: androidInfo.version.sdkInt.toString(),
+        osType: android,
         version: androidInfo.version.incremental.toString(),
         sdk: androidInfo.version.sdkInt.toString(),
-        device: androidInfo.device ?? 'Unknown',
-        model: androidInfo.model ?? 'Unknown',
-        manufacturer: androidInfo.manufacturer ?? 'Unknown',
+        device: androidInfo.device ?? unknown,
+        model: androidInfo.model ?? unknown,
+        manufacturer: androidInfo.manufacturer ?? unknown,
         fcmToken: fcmToken,
-        isRoot: await Root.isRooted() ?? false,
       ).toJson();
     } else if (Platform.isIOS) {
       final iosInfo = await DeviceInfoPlugin().iosInfo;
 
-      //TODO: Get more information for IOS device
-
       return DeviceIosInformation(
-        //TODO: Get this from pubspec.yaml
-        libraryVersion: '1',
-        osType: 'IOS',
-        version: iosInfo.systemVersion ?? 'Unknown',
-        sdk: 'Unknown',
-        device: iosInfo.identifierForVendor ?? 'Unknown',
-        model: iosInfo.model ?? 'Unknown',
-        manufacturer: 'Unknown',
+        libraryVersion: iosInfo.systemVersion ?? unknown,
+        osType: ios,
+        version: iosInfo.systemVersion ?? unknown,
+        sdk: iosInfo.systemVersion ?? unknown,
+        device: iosInfo.identifierForVendor ?? unknown,
+        model: iosInfo.model ?? unknown,
+        manufacturer: iosInfo.name ?? unknown,
         fcmToken: fcmToken,
-        identifier: await AdvertisingId.id(true) ?? 'Permission not granted',
+        identifier: await AdvertisingId.id(true) ?? unknown,
       ).toJson();
     }
     return <String, dynamic>{};
@@ -78,8 +76,8 @@ abstract class DeviceInformation {
 
 @JsonSerializable()
 class DeviceAndroidInformation extends DeviceInformation {
-  @JsonKey(name: 'is_root')
-  final bool isRoot;
+  @JsonKey(name: 'is_root', includeIfNull: false)
+  final bool? isRoot;
 
   DeviceAndroidInformation({
     required String libraryVersion,
@@ -90,7 +88,7 @@ class DeviceAndroidInformation extends DeviceInformation {
     required String model,
     required String manufacturer,
     String? fcmToken,
-    required this.isRoot,
+    this.isRoot,
   }) : super(
           libraryVersion: libraryVersion,
           osType: osType,

@@ -1,4 +1,6 @@
 import 'package:dio/dio.dart';
+import 'package:flutter_user_sdk/data/interceptors/request_handler_interceptor.dart';
+import 'package:flutter_user_sdk/data/user_api_service.dart';
 
 extension RequestOptionsSerializer on RequestOptions {
   Map<String, dynamic> toJson() {
@@ -50,5 +52,16 @@ extension RequestOptionsSerializer on RequestOptions {
       responseDecoder: json['responseDecoder'],
       listFormat: ListFormat.values.byName(json['listFormat']),
     );
+  }
+
+  bool get containsUserKey => (headers[userKeyHeaderKey] as String).isNotEmpty;
+
+  void addUserKey(String key) {
+    headers.addAll(<String, dynamic>{userKeyHeaderKey: key});
+
+    if (uri.path == UserApiService.pingUrl) {
+      (data['customer'] as Map<String, dynamic>)
+          .addAll(<String, dynamic>{'userKey': key});
+    }
   }
 }

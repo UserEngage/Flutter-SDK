@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:connectivity_plus/connectivity_plus.dart';
+import 'package:flutter/material.dart';
 
 class ConnectionService {
   late ConnectivityResult _currentConnection;
@@ -17,11 +18,25 @@ class ConnectionService {
     return _instance!;
   }
 
-  Future<void> initialize() async {
+  Future<void> initialize({
+    required VoidCallback connectedOnInitialize,
+    required VoidCallback onConnectionRestored,
+    required VoidCallback disconnectedOnInitialize,
+  }) async {
     final connectivity = Connectivity();
     _currentConnection = await connectivity.checkConnectivity();
+
+    if (isConnected) {
+      connectedOnInitialize();
+    } else {
+      disconnectedOnInitialize();
+    }
+
     _connectionStream = connectivity.onConnectivityChanged.listen(
-      (event) {
+      (event) async {
+        if (onConnectedFromNoInternet(event)) {
+          onConnectionRestored();
+        }
         _currentConnection = event;
       },
     );
@@ -31,7 +46,13 @@ class ConnectionService {
 
   bool get isConnected =>
       _currentConnection == ConnectivityResult.mobile ||
-      _currentConnection == ConnectivityResult.mobile;
+      _currentConnection == ConnectivityResult.wifi;
+
+  bool onConnectedFromNoInternet(ConnectivityResult newConnection) =>
+      (_currentConnection == ConnectivityResult.none ||
+          _currentConnection == ConnectivityResult.bluetooth) &&
+      (newConnection == ConnectivityResult.mobile ||
+          newConnection == ConnectivityResult.wifi);
 
   void dispose() => _connectionStream.cancel();
 }

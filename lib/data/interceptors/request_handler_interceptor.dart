@@ -2,6 +2,8 @@ import 'package:dio/dio.dart';
 import 'package:flutter_user_sdk/data/cache_repository.dart';
 import 'package:flutter_user_sdk/utils/extensions/request_options_serializer.dart';
 
+const String userKeyHeaderKey = 'X-User-Key';
+
 class RequestHandlerInterceptor implements Interceptor {
   final String mobileSdkKey;
   final String? userKey;
@@ -15,7 +17,7 @@ class RequestHandlerInterceptor implements Interceptor {
   }) : customHeaders = <String, String>{
           'Content-Type': 'application/json',
           'Authorization': 'Token $mobileSdkKey',
-          'X-User-Key': userKey ?? '',
+          userKeyHeaderKey: userKey ?? '',
         };
 
   @override

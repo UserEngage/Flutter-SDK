@@ -3,7 +3,7 @@ import 'package:flutter_user_sdk/data/cache_repository.dart';
 import 'package:flutter_user_sdk/data/interceptors/request_handler_interceptor.dart';
 import 'package:flutter_user_sdk/models/customer_extended_info.dart';
 import 'package:flutter_user_sdk/models/events/custom_event.dart';
-import 'package:flutter_user_sdk/models/events/in_app_event.dart';
+import 'package:flutter_user_sdk/models/events/notification_event.dart';
 import 'package:flutter_user_sdk/models/events/logout_event.dart';
 import 'package:flutter_user_sdk/models/events/screen_event.dart';
 import 'package:flutter_user_sdk/models/events/product_event.dart';
@@ -15,26 +15,34 @@ part 'user_api_service.g.dart';
 abstract class UserApiService {
   factory UserApiService(Dio dio, {required String baseUrl}) = _UserApiService;
 
-  @POST('/api/sdk/v1/ping/')
+  static const String pingUrl = '/api/sdk/v1/ping/';
+  static const String eventUrl = '/api/sdk/v1/event/';
+  static const String screenEventUrl = '/api/sdk/v1/screen_event/';
+  static const String productEventUrl = '/api/sdk/v1/product_event/';
+  static const String logoutUrl = '/api/sdk/v1/event/';
+  static const String notificationUrl = '/api/sdk/v1/{type}/{id}/{action}/';
+
+  @POST(pingUrl)
   Future<String> postPing(@Body() CustomerExtendedInfo body);
 
-  @POST('/api/sdk/v1/event/')
+  @POST(eventUrl)
   Future<void> postEvent(@Body() CustomEvent body);
 
-  @POST('/api/sdk/v1/screen_event/')
+  @POST(screenEventUrl)
   Future<void> postScreenEvent(@Body() ScreenEvent body);
 
-  @POST('/api/sdk/v1/product_event/')
+  @POST(productEventUrl)
   Future<void> postProductEvent(@Body() ProductEvent body);
 
-  @POST('/api/sdk/v1/event/')
+  @POST(logoutUrl)
   Future<void> logoutEvent(@Body() LogoutEvent body);
 
-  @POST('/api/sdk/v1/{id}/{action}')
-  Future<void> inAppEvent(
+  @POST(notificationUrl)
+  Future<void> notificationEvent(
     @Path() String id,
-    @Path() String inAppEventType,
-    @Body() InAppEvent event,
+    @Path() String type,
+    @Path() String action,
+    @Body() NotificationEvent event,
   );
 
   static UserApiService create({
@@ -52,11 +60,11 @@ abstract class UserApiService {
             mobileSdkKey: mobileSdkKey,
             userKey: userKey,
           ),
-          //TODO: make it optional or delete
           LogInterceptor(
             requestBody: true,
             request: false,
-            requestHeader: true,
+            requestHeader: false,
+            responseHeader: false,
             responseBody: true,
           ),
         ],

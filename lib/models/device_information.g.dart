@@ -17,7 +17,7 @@ DeviceAndroidInformation _$DeviceAndroidInformationFromJson(
       model: json['model'] as String,
       manufacturer: json['manufacturer'] as String,
       fcmToken: json['fcm_key'] as String?,
-      isRoot: json['is_root'] as bool,
+      isRoot: json['is_root'] as bool?,
     );
 
 Map<String, dynamic> _$DeviceAndroidInformationToJson(
@@ -39,7 +39,7 @@ Map<String, dynamic> _$DeviceAndroidInformationToJson(
   }
 
   writeNotNull('fcm_key', instance.fcmToken);
-  val['is_root'] = instance.isRoot;
+  writeNotNull('is_root', instance.isRoot);
   return val;
 }
 

@@ -1,66 +1,116 @@
 import 'dart:io';
-
-import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:another_flushbar/flushbar.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_custom_tabs/flutter_custom_tabs.dart';
 import 'package:flutter_user_sdk/data/repository.dart';
+import 'package:flutter_user_sdk/models/events/notification_event.dart';
+import 'package:flutter_user_sdk/notifications/in_app_message.dart';
+import 'package:flutter_user_sdk/notifications/notification_message.dart';
 
 class NotificationBuilder {
-  static dynamic buildNotification({
+  static dynamic buildInAppMessage({
     required BuildContext context,
-    Function(RemoteMessage)? builder,
     required Repository repository,
-    bool openDefaultDialog = true,
-    //TODO: Change to notification model
-    required RemoteMessage message,
+    required InAppMessage message,
   }) {
-    if (openDefaultDialog) {
-      return showDialog<dynamic>(
-        context: context,
-        builder: (_) {
-          //TODO: Mocked dialog. Pass arguments from notification model
-          //repository.sendNotificationEvent(id: id, action: InAppEventAction.opened);
+    repository.sendNotificationEvent(
+      id: message.id,
+      action: NotificationAction.opened,
+      type: NotificationType.inApp,
+    );
 
-          return Platform.isAndroid
-              ? AlertDialog(
-                  title: const Text('Got message'),
-                  content: const Text(
-                    'We got message from firebase. Maybe open it?',
+    return showDialog<dynamic>(
+      context: context,
+      routeSettings: const RouteSettings(name: 'NotificationScreen'),
+      builder: (_) => Platform.isAndroid
+          ? AlertDialog(
+              title: Text(message.title),
+              content: Text(message.message),
+              actionsAlignment: MainAxisAlignment.center,
+              actions: [
+                if (message.actionUrl != null)
+                  ElevatedButton(
+                    onPressed: () async {
+                      await launch(message.actionUrl!);
+                      await repository.sendNotificationEvent(
+                        id: message.id,
+                        action: NotificationAction.clicked,
+                        type: NotificationType.inApp,
+                      );
+                    },
+                    child: Text(message.actionBtn),
+                  )
+                else
+                  ElevatedButton(
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                    },
+                    child: const Text('X'),
                   ),
-                  actionsAlignment: MainAxisAlignment.center,
-                  actions: [
-                    ElevatedButton(
-                      onPressed: () async {
-                        // repository.sendNotificationEvent(id: id, action: InAppEventAction.clicked);
-                        //TODO: Open link provided in notification data
+              ],
+            )
+          : CupertinoAlertDialog(
+              title: Text(message.title),
+              content: Text(message.message),
+              actions: [
+                if (message.actionUrl != null)
+                  CupertinoButton(
+                    onPressed: () async {
+                      await launch(message.actionUrl!);
+                      await repository.sendNotificationEvent(
+                        id: message.id,
+                        action: NotificationAction.clicked,
+                        type: NotificationType.inApp,
+                      );
+                    },
+                    child: Text(message.actionBtn),
+                  )
+                else
+                  CupertinoButton(
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                    },
+                    child: const Text('X'),
+                  ),
+              ],
+            ),
+    );
+  }
 
-                        await launch('https://flutter.dev/');
-                      },
-                      child: const Text('Check it out'),
-                    ),
-                  ],
-                )
-              : CupertinoAlertDialog(
-                  title: const Text('Got message'),
-                  content: const Text(
-                    'We got message from firebase. Maybe open it?',
-                  ),
-                  actions: [
-                    CupertinoButton(
-                      onPressed: () async {
-                        // repository.sendNotificationEvent(id: id, action: InAppEventAction.clicked);
-                        //TODO: Open link provided in notification data
-                        await launch('https://flutter.dev/');
-                      },
-                      child: const Text('Check it out'),
-                    ),
-                  ],
-                );
-        },
-      );
-    } else {
-      return builder!(message);
-    }
+  static dynamic buildPushNotification({
+    required BuildContext context,
+    required Repository repository,
+    required PushNotificationMessage message,
+  }) {
+    repository.sendNotificationEvent(
+      id: message.id,
+      action: NotificationAction.opened,
+      type: NotificationType.push,
+    );
+
+    Flushbar<dynamic>(
+      title: message.title,
+      message: message.message,
+      titleColor: Colors.black87,
+      messageColor: Colors.black54,
+      backgroundColor: const Color(0xFFf0f0f0),
+      flushbarPosition: FlushbarPosition.TOP,
+      margin: const EdgeInsets.all(16),
+      borderRadius: BorderRadius.circular(6),
+      onTap: (_) {
+        if (!message.isLinkEmpty) {
+          repository.sendNotificationEvent(
+            id: message.id,
+            action: NotificationAction.clicked,
+            type: NotificationType.push,
+          );
+
+          launch(message.link);
+        } else {
+          Navigator.maybePop(context);
+        }
+      },
+    ).show(context);
   }
 }

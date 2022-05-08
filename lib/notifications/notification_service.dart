@@ -1,26 +1,45 @@
 import 'dart:async';
+import 'dart:developer';
 
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:flutter_user_sdk/utils/connection_service.dart';
 
 class NotificationService {
+  static bool isInitialized = false;
+
   static Future<void> initialize({Function(String?)? onTokenReceived}) async {
+    if (!ConnectionService.instance.isConnected) return;
     try {
       await Firebase.initializeApp();
+
+      await FirebaseMessaging.instance
+          .setForegroundNotificationPresentationOptions(
+        alert: true,
+        badge: true,
+        sound: true,
+      );
+
       final token = await _getToken();
 
       if (onTokenReceived != null) {
         onTokenReceived(token);
       }
       _onMessageReceived();
-    } catch (_) {
-      throw Exception(
-        'You have to register your app in firebase and add google-service file to project in order to use notifications and subscribe UserCom campanies',
-      );
+
+      isInitialized = true;
+    } catch (ex) {
+      log('FCM not initialized properly. Try add google-services.json');
     }
   }
 
   static final messageController = StreamController<RemoteMessage>();
+
+  static Future<void> _onBackgroundMessage(RemoteMessage message) async {
+    await Firebase.initializeApp();
+    messageController.add(message);
+    return Future.value(null);
+  }
 
   static void _onMessageReceived() async {
     FirebaseMessaging.onMessageOpenedApp.listen((message) {
@@ -30,6 +49,8 @@ class NotificationService {
     FirebaseMessaging.onMessage.listen((message) {
       messageController.add(message);
     });
+
+    FirebaseMessaging.onBackgroundMessage(_onBackgroundMessage);
 
     final message = await FirebaseMessaging.instance.getInitialMessage();
     if (message != null) {

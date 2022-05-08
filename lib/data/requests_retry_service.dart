@@ -8,22 +8,36 @@ class RequestsRetryService {
 
   RequestsRetryService(this.cacheRepository);
 
-  //TODO: Implement periodic task
+  final dio = Dio();
 
   void resendRequests() async {
+    if (!ConnectionService.instance.isConnected) return;
+
     final cachedRequests = cacheRepository.getCachedRequests();
 
-    if (!ConnectionService.instance.isConnected) return;
     for (final element in cachedRequests) {
       final requestOption = RequestOptionsSerializer.fromJson(element.object);
 
-      await Dio().fetch<dynamic>(requestOption).then(
+      final userKey = cacheRepository.getUserKey();
+
+      if (requestOption.containsUserKey) {
+        _sendRequest(requestOption, element.key);
+      } else if (userKey != null && !requestOption.containsUserKey) {
+        requestOption.addUserKey(userKey);
+        _sendRequest(requestOption, element.key);
+      }
+    }
+  }
+
+  void _sendRequest(RequestOptions requestOption, int key) {
+    try {
+      dio.fetch<dynamic>(requestOption).then(
         (response) {
           if (response.statusCode == 200) {
-            cacheRepository.removeRequest(key: element.key);
+            cacheRepository.removeRequest(key: key);
           }
         },
       );
-    }
+    } catch (_) {}
   }
 }

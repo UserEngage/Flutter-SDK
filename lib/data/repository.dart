@@ -6,7 +6,7 @@ import 'package:flutter_user_sdk/models/customer.dart';
 import 'package:flutter_user_sdk/models/customer_extended_info.dart';
 import 'package:flutter_user_sdk/models/device_information.dart';
 import 'package:flutter_user_sdk/models/events/custom_event.dart';
-import 'package:flutter_user_sdk/models/events/in_app_event.dart';
+import 'package:flutter_user_sdk/models/events/notification_event.dart';
 import 'package:flutter_user_sdk/models/events/logout_event.dart';
 import 'package:flutter_user_sdk/models/events/product_event.dart';
 import 'package:flutter_user_sdk/models/events/screen_event.dart';
@@ -72,11 +72,21 @@ class Repository {
 
   Future<void> sendNotificationEvent({
     required String id,
-    required InAppEventAction action,
+    required NotificationType type,
+    required NotificationAction action,
   }) async {
     try {
-      final event = InAppEvent(id: id, action: action);
-      await service.inAppEvent(id, event.action.name, event);
+      late NotificationEvent event;
+
+      if (type == NotificationType.push) {
+        event = NotificationEvent.push(id: id, action: action);
+      } else if (type == NotificationType.inApp) {
+        event = NotificationEvent.inApp(id: id, action: action);
+      } else {
+        throw Exception('Unsupported NotificationType');
+      }
+
+      await service.notificationEvent(id, event.type, event.action.name, event);
     } catch (_) {}
   }
 }
