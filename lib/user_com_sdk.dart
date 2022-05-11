@@ -180,7 +180,7 @@ class UserComSDK {
               );
             }
           }
-          if (notificationAdapter.type == NotificationType.notification) {
+          if (notificationAdapter.type == NotificationType.push) {
             if (onNotificationMessage != null) {
               onNotificationMessage(message as PushNotificationMessage);
             } else {

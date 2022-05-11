@@ -1,61 +1,65 @@
 import 'dart:async';
 import 'dart:developer';
 
+import 'package:awesome_notifications/awesome_notifications.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:flutter_user_sdk/notifications/notification_adapter.dart';
 import 'package:flutter_user_sdk/utils/connection_service.dart';
+import 'package:flutter_user_sdk/utils/extensions/notification_converters.dart';
 
 class NotificationService {
+  static const notificationChannelKey = 'user_com_channel';
+  static const _channelName = 'User channel';
+  static const _channelDescription = 'Engaging interactions with users';
+
   static bool isInitialized = false;
 
   static Future<void> initialize({Function(String?)? onTokenReceived}) async {
     if (!ConnectionService.instance.isConnected) return;
     try {
-      await Firebase.initializeApp();
-
-      await FirebaseMessaging.instance
-          .setForegroundNotificationPresentationOptions(
-        alert: true,
-        badge: true,
-        sound: true,
-      );
+      await _setupFirebase();
 
       final token = await _getToken();
 
       if (onTokenReceived != null) {
         onTokenReceived(token);
       }
+      await _initializeLocalNotifications();
+
       _onMessageReceived();
 
       isInitialized = true;
     } catch (ex) {
-      log('FCM not initialized properly. Try add google-services.json');
+      log('FCM not initialized properly. Try add google-services.json. Exception: $ex');
     }
   }
 
   static final messageController = StreamController<RemoteMessage>();
 
-  static Future<void> _onBackgroundMessage(RemoteMessage message) async {
-    await Firebase.initializeApp();
-    messageController.add(message);
-    return Future.value(null);
-  }
-
   static void _onMessageReceived() async {
-    FirebaseMessaging.onMessageOpenedApp.listen((message) {
-      messageController.add(message);
-    });
-
     FirebaseMessaging.onMessage.listen((message) {
       messageController.add(message);
     });
 
-    FirebaseMessaging.onBackgroundMessage(_onBackgroundMessage);
+    AwesomeNotifications().actionStream.listen((event) {
+      messageController.add(event.toRemoteMessage());
+    });
 
-    final message = await FirebaseMessaging.instance.getInitialMessage();
-    if (message != null) {
-      messageController.add(message);
+    FirebaseMessaging.onBackgroundMessage(_onBackgroundMessage);
+  }
+
+  static Future<void> _onBackgroundMessage(RemoteMessage message) async {
+    if (NotificationAdapter.isUserComMessage(message.data)) {
+      final notifiaction = NotificationAdapter.fromJson(message.data);
+
+      if (notifiaction.type == NotificationType.push) {
+        await AwesomeNotifications().createNotification(
+          content: message.toNotificationContent(),
+        );
+      }
     }
+    return Future.value(null);
   }
 
   static Future<bool> _isPermssionGranted() async {
@@ -78,5 +82,30 @@ class NotificationService {
       return token;
     }
     return null;
+  }
+
+  static Future<void> _initializeLocalNotifications() async {
+    await AwesomeNotifications().initialize(
+      null,
+      [
+        NotificationChannel(
+          channelKey: notificationChannelKey,
+          channelName: _channelName,
+          channelDescription: _channelDescription,
+        )
+      ],
+      debug: true,
+    );
+  }
+
+  static Future<void> _setupFirebase() async {
+    await Firebase.initializeApp();
+
+    await FirebaseMessaging.instance
+        .setForegroundNotificationPresentationOptions(
+      alert: true,
+      badge: true,
+      sound: true,
+    );
   }
 }

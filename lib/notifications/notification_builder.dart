@@ -105,21 +105,26 @@ class NotificationBuilder {
       message: message.message,
       titleColor: Colors.black87,
       messageColor: Colors.black54,
-      backgroundColor: const Color(0xFFf0f0f0),
+      backgroundColor: const Color(0xFFfafafa),
+      duration: const Duration(seconds: 12),
       flushbarPosition: FlushbarPosition.TOP,
       margin: const EdgeInsets.all(16),
       borderRadius: BorderRadius.circular(6),
-      onTap: (_) {
+      onTap: (_) async {
         if (!message.isLinkEmpty) {
-          repository.sendNotificationEvent(
-            id: message.id,
-            action: NotificationAction.clicked,
-            type: NotificationType.push,
+          unawaited(
+            repository.sendNotificationEvent(
+              id: message.id,
+              action: NotificationAction.clicked,
+              type: NotificationType.push,
+            ),
           );
 
-          launch(message.link);
+          await launch(message.link).then(
+            (_) => Navigator.maybePop(context),
+          );
         } else {
-          Navigator.maybePop(context);
+          await Navigator.maybePop(context);
         }
       },
     ).show(context);

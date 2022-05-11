@@ -1,7 +1,7 @@
 import 'package:flutter_user_sdk/notifications/in_app_message.dart';
 import 'package:flutter_user_sdk/notifications/notification_message.dart';
 
-enum NotificationType { notification, inApp }
+enum NotificationType { push, inApp }
 
 abstract class UserComMessage {}
 
@@ -18,7 +18,7 @@ class NotificationAdapter {
       );
     } else if (json['type'] == '1') {
       return NotificationAdapter(
-        NotificationType.notification,
+        NotificationType.push,
         PushNotificationMessage.fromJson(json),
       );
     } else {
