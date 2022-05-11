@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 import 'package:another_flushbar/flushbar.dart';
 import 'package:flutter/cupertino.dart';
@@ -32,11 +33,16 @@ class NotificationBuilder {
                 if (message.actionUrl != null)
                   ElevatedButton(
                     onPressed: () async {
-                      await launch(message.actionUrl!);
-                      await repository.sendNotificationEvent(
-                        id: message.id,
-                        action: NotificationAction.clicked,
-                        type: NotificationType.inApp,
+                      unawaited(
+                        repository.sendNotificationEvent(
+                          id: message.id,
+                          action: NotificationAction.clicked,
+                          type: NotificationType.inApp,
+                        ),
+                      );
+
+                      await launch(message.actionUrl!).then(
+                        (_) => Navigator.pop(context),
                       );
                     },
                     child: Text(message.actionBtn),
@@ -57,11 +63,16 @@ class NotificationBuilder {
                 if (message.actionUrl != null)
                   CupertinoButton(
                     onPressed: () async {
-                      await launch(message.actionUrl!);
-                      await repository.sendNotificationEvent(
-                        id: message.id,
-                        action: NotificationAction.clicked,
-                        type: NotificationType.inApp,
+                      unawaited(
+                        repository.sendNotificationEvent(
+                          id: message.id,
+                          action: NotificationAction.clicked,
+                          type: NotificationType.inApp,
+                        ),
+                      );
+
+                      await launch(message.actionUrl!).then(
+                        (_) => Navigator.pop(context),
                       );
                     },
                     child: Text(message.actionBtn),
