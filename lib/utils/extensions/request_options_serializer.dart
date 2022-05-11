@@ -59,9 +59,11 @@ extension RequestOptionsSerializer on RequestOptions {
   void addUserKey(String key) {
     headers.addAll(<String, dynamic>{userKeyHeaderKey: key});
 
-    if (uri.path == UserApiService.pingUrl) {
+    if (isPingRequest) {
       (data['customer'] as Map<String, dynamic>)
           .addAll(<String, dynamic>{'userKey': key});
     }
   }
+
+  bool get isPingRequest => uri.path == UserApiService.pingUrl;
 }

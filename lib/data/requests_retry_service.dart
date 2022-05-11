@@ -1,4 +1,7 @@
+import 'dart:convert';
+
 import 'package:dio/dio.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_user_sdk/data/cache_repository.dart';
 import 'package:flutter_user_sdk/utils/connection_service.dart';
 import 'package:flutter_user_sdk/utils/extensions/request_options_serializer.dart';
@@ -10,7 +13,7 @@ class RequestsRetryService {
 
   final dio = Dio();
 
-  void resendRequests() async {
+  void resendRequests({VoidCallback? onUserKeyChanged}) async {
     if (!ConnectionService.instance.isConnected) return;
 
     final cachedRequests = cacheRepository.getCachedRequests();
@@ -20,24 +23,33 @@ class RequestsRetryService {
 
       final userKey = cacheRepository.getUserKey();
 
-      if (requestOption.containsUserKey) {
-        _sendRequest(requestOption, element.key);
-      } else if (userKey != null && !requestOption.containsUserKey) {
+      if (userKey != null) {
         requestOption.addUserKey(userKey);
-        _sendRequest(requestOption, element.key);
+      }
+
+      if (requestOption.containsUserKey) {
+        await _sendRequest(requestOption, element.key);
+      } else if (requestOption.isPingRequest) {
+        final result = await _sendRequest(requestOption, element.key);
+
+        cacheRepository.addUserKey(jsonDecode(result?.data)['user']['key']);
+        if (onUserKeyChanged != null) onUserKeyChanged();
       }
     }
   }
 
-  void _sendRequest(RequestOptions requestOption, int key) {
+  Future<Response?> _sendRequest(RequestOptions requestOption, int key) async {
     try {
-      dio.fetch<dynamic>(requestOption).then(
+      return await dio.fetch<dynamic>(requestOption).then(
         (response) {
           if (response.statusCode == 200) {
             cacheRepository.removeRequest(key: key);
           }
+          return response;
         },
       );
-    } catch (_) {}
+    } catch (_) {
+      return null;
+    }
   }
 }

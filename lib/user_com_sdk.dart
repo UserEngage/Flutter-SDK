@@ -82,7 +82,10 @@ class UserComSDK {
             onTokenReceived: (token) => _fcmToken = token,
           );
         }
-        RequestsRetryService(_cacheRepository).resendRequests();
+
+        RequestsRetryService(_cacheRepository).resendRequests(
+          onUserKeyChanged: () => _setupClient(),
+        );
       },
     );
   }
