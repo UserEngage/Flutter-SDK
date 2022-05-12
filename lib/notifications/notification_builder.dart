@@ -15,12 +15,6 @@ class NotificationBuilder {
     required Repository repository,
     required InAppMessage message,
   }) {
-    repository.sendNotificationEvent(
-      id: message.id,
-      action: NotificationAction.opened,
-      type: NotificationType.inApp,
-    );
-
     return showDialog<dynamic>(
       context: context,
       routeSettings: const RouteSettings(name: 'NotificationScreen'),
@@ -94,12 +88,6 @@ class NotificationBuilder {
     required Repository repository,
     required PushNotificationMessage message,
   }) {
-    repository.sendNotificationEvent(
-      id: message.id,
-      action: NotificationAction.opened,
-      type: NotificationType.push,
-    );
-
     Flushbar<dynamic>(
       title: message.title,
       message: message.message,
