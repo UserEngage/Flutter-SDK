@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:developer';
 
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
@@ -17,6 +18,8 @@ class RequestsRetryService {
     if (!ConnectionService.instance.isConnected) return;
 
     final cachedRequests = cacheRepository.getCachedRequests();
+
+    log('Resending cached requests: ${cachedRequests.length}');
 
     for (final element in cachedRequests) {
       final requestOption = RequestOptionsSerializer.fromJson(element.object);
@@ -42,13 +45,15 @@ class RequestsRetryService {
     try {
       return await dio.fetch<dynamic>(requestOption).then(
         (response) {
-          if (response.statusCode == 200) {
+          if ([200, 201, 202].contains(response.statusCode)) {
             cacheRepository.removeRequest(key: key);
           }
+          log('Request ${requestOption.uri} sent');
           return response;
         },
       );
-    } catch (_) {
+    } catch (ex) {
+      log('Could not send cached request. Exception: $ex');
       return null;
     }
   }

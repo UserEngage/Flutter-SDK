@@ -27,6 +27,8 @@ class UserComSDK {
     return _instance!;
   }
 
+  late bool _enableLogging;
+
   /// Create project on user.com and get your key. You can find it in settings
   /// Settings -> App settings -> Advanced -> Mobile SDK keys
   late String _mobileSdkKey;
@@ -53,10 +55,12 @@ class UserComSDK {
     required String mobileSdkKey,
     String? integrationsApiKey,
     required String appDomain,
+    bool enableLogging = true,
   }) async {
     _mobileSdkKey = mobileSdkKey;
     _integrationsApiKey = integrationsApiKey;
     _appDomain = appDomain;
+    _enableLogging = enableLogging;
 
     _cacheRepository = CacheRepository();
     await _cacheRepository.initialize();
@@ -184,14 +188,24 @@ class UserComSDK {
             }
           }
           if (notificationAdapter.type == NotificationType.push) {
+            final pushMessage =
+                notificationAdapter.message as PushNotificationMessage;
             if (onNotificationMessage != null) {
-              onNotificationMessage(message as PushNotificationMessage);
+              onNotificationMessage(pushMessage);
             } else {
-              NotificationBuilder.buildPushNotification(
-                context: context,
-                repository: _repository,
-                message: notificationAdapter.message as PushNotificationMessage,
-              );
+              if (message.from == NotificationService.notificationChannelKey) {
+                NotificationBuilder.launchCustomTab(
+                  repository: _repository,
+                  message: pushMessage,
+                );
+              } else {
+                NotificationBuilder.buildPushNotification(
+                  context: context,
+                  repository: _repository,
+                  message:
+                      notificationAdapter.message as PushNotificationMessage,
+                );
+              }
             }
           }
         },
@@ -206,6 +220,7 @@ class UserComSDK {
       integrationsApiKey: _integrationsApiKey,
       appDomain: _appDomain,
       userKey: _cacheRepository.getUserKey(),
+      enableLogging: _enableLogging,
     );
 
     _repository = Repository(

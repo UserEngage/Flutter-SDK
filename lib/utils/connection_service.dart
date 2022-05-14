@@ -35,6 +35,7 @@ class ConnectionService {
     _connectionStream = connectivity.onConnectivityChanged.listen(
       (event) async {
         if (onConnectedFromNoInternet(event)) {
+          _currentConnection = event;
           onConnectionRestored();
         }
         _currentConnection = event;

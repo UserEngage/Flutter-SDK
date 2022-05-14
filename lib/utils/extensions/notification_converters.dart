@@ -5,6 +5,7 @@ import 'package:flutter_user_sdk/notifications/notification_service.dart';
 extension ReceivedActionToRemoteMessage on ReceivedAction {
   RemoteMessage toRemoteMessage() {
     return RemoteMessage(
+      from: NotificationService.notificationChannelKey,
       data: <String, dynamic>{
         'id': id.toString(),
         'type': '1',

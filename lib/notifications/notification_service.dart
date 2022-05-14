@@ -31,7 +31,9 @@ class NotificationService {
 
       isInitialized = true;
     } catch (ex) {
-      log('FCM not initialized properly. Try add google-services.json. Exception: $ex');
+      log(
+        'FCM not initialized properly. Try add google-services.json. Exception: $ex',
+      );
     }
   }
 

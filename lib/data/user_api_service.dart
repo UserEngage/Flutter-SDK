@@ -1,12 +1,13 @@
 import 'package:dio/dio.dart';
 import 'package:flutter_user_sdk/data/cache_repository.dart';
 import 'package:flutter_user_sdk/data/interceptors/request_handler_interceptor.dart';
+import 'package:flutter_user_sdk/flutter_user_sdk.dart';
 import 'package:flutter_user_sdk/models/customer_extended_info.dart';
 import 'package:flutter_user_sdk/models/events/custom_event.dart';
 import 'package:flutter_user_sdk/models/events/notification_event.dart';
 import 'package:flutter_user_sdk/models/events/logout_event.dart';
 import 'package:flutter_user_sdk/models/events/screen_event.dart';
-import 'package:flutter_user_sdk/models/events/product_event.dart';
+
 import 'package:retrofit/retrofit.dart';
 
 part 'user_api_service.g.dart';
@@ -51,6 +52,7 @@ abstract class UserApiService {
     required String appDomain,
     required CacheRepository cacheRepository,
     String? userKey,
+    bool enableLogging = false,
   }) {
     final client = Dio()
       ..interceptors.addAll(
@@ -60,13 +62,14 @@ abstract class UserApiService {
             mobileSdkKey: mobileSdkKey,
             userKey: userKey,
           ),
-          LogInterceptor(
-            requestBody: true,
-            request: false,
-            requestHeader: false,
-            responseHeader: false,
-            responseBody: true,
-          ),
+          if (enableLogging)
+            LogInterceptor(
+              requestBody: true,
+              request: false,
+              requestHeader: false,
+              responseHeader: false,
+              responseBody: true,
+            ),
         ],
       );
 

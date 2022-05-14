@@ -117,4 +117,21 @@ class NotificationBuilder {
       },
     ).show(context);
   }
+
+  static Future<void> launchCustomTab({
+    required Repository repository,
+    required PushNotificationMessage message,
+  }) async {
+    if (!message.isLinkEmpty) {
+      unawaited(
+        repository.sendNotificationEvent(
+          id: message.id,
+          action: NotificationAction.clicked,
+          type: NotificationType.push,
+        ),
+      );
+
+      await launch(message.link);
+    }
+  }
 }

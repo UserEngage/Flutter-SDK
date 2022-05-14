@@ -1,3 +1,6 @@
+import 'dart:developer';
+import 'dart:io';
+
 import 'package:dio/dio.dart';
 import 'package:flutter_user_sdk/data/cache_repository.dart';
 import 'package:flutter_user_sdk/utils/extensions/request_options_serializer.dart';
@@ -29,10 +32,19 @@ class RequestHandlerInterceptor implements Interceptor {
 
   @override
   void onError(DioError err, ErrorInterceptorHandler handler) {
-    if (err.type != DioErrorType.response) {
+    final bool isNoInternetError = err.error is SocketException ||
+        [
+          DioErrorType.connectTimeout,
+          DioErrorType.receiveTimeout,
+          DioErrorType.sendTimeout,
+        ].contains(err.type);
+
+    if (isNoInternetError) {
       final jsonOptions = err.requestOptions.toJson();
 
       cacheRepository.saveInvalidRequest(jsonOptions);
+
+      log('Saved request to local cache');
     }
     return handler.next(err);
   }
