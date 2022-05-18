@@ -107,7 +107,10 @@ class UserComSDK {
   /// Triggering this function will not create new user.
   /// It will override information about user created with _registerAnonymusUserSession()
   Future<void> registerUser({Customer? customer}) async {
-    await _repository.postUserDeviceInfo(customer: customer);
+    await _repository.postUserDeviceInfo(
+      customer: customer,
+      fcmToken: _fcmToken,
+    );
     _setupClient();
   }
 
