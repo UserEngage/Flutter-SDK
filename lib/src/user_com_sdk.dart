@@ -5,6 +5,7 @@ import 'package:flutter_user_sdk/src/data/requests_retry_service.dart';
 import 'package:flutter_user_sdk/src/data/user_api_service.dart';
 import 'package:flutter_user_sdk/src/models/customer.dart';
 import 'package:flutter_user_sdk/src/models/events/custom_event.dart';
+import 'package:flutter_user_sdk/src/models/events/notification_event.dart';
 import 'package:flutter_user_sdk/src/models/events/product_event.dart';
 import 'package:flutter_user_sdk/src/models/events/screen_event.dart';
 import 'package:flutter_user_sdk/src/notifications/in_app_message.dart';
@@ -159,6 +160,20 @@ class UserComSDK {
   Future<void> logoutUser() async {
     await _repository.logoutUser();
     await _cacheRepository.clearStorage();
+  }
+
+  /// Use this method to notify User.com service that notification was opened
+  /// Trigger this only when You specify [onInAppMessage] and [onNotificationMessage]
+  /// inside [buildNotificationOnMessageReceived] function
+  Future<void> notificationClickedEvent({
+    required String id,
+    required NotificationType type,
+  }) async {
+    await _repository.sendNotificationEvent(
+      id: id,
+      type: type,
+      action: NotificationAction.clicked,
+    );
   }
 
   /// Function needs [BuildContext] to show default messages received from FCM.

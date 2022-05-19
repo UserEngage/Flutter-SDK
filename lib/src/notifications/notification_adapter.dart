@@ -1,7 +1,6 @@
+import 'package:flutter_user_sdk/src/models/events/notification_event.dart';
 import 'package:flutter_user_sdk/src/notifications/in_app_message.dart';
 import 'package:flutter_user_sdk/src/notifications/notification_message.dart';
-
-enum NotificationType { push, inApp }
 
 abstract class UserComMessage {}
 

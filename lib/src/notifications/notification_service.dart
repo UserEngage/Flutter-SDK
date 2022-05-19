@@ -4,6 +4,7 @@ import 'dart:developer';
 import 'package:awesome_notifications/awesome_notifications.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:flutter_user_sdk/src/models/events/notification_event.dart';
 import 'package:flutter_user_sdk/src/notifications/notification_adapter.dart';
 import 'package:flutter_user_sdk/src/utils/connection_service.dart';
 import 'package:flutter_user_sdk/src/utils/extensions/notification_converters.dart';
