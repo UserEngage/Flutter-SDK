@@ -2,8 +2,8 @@ import 'dart:developer';
 import 'dart:io';
 
 import 'package:dio/dio.dart';
-import 'package:flutter_user_sdk/data/cache_repository.dart';
-import 'package:flutter_user_sdk/utils/extensions/request_options_serializer.dart';
+import 'package:flutter_user_sdk/src/data/cache_repository.dart';
+import 'package:flutter_user_sdk/src/utils/extensions/request_options_serializer.dart';
 
 const String userKeyHeaderKey = 'X-User-Key';
 

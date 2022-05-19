@@ -4,10 +4,10 @@ import 'package:another_flushbar/flushbar.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_custom_tabs/flutter_custom_tabs.dart';
-import 'package:flutter_user_sdk/data/repository.dart';
-import 'package:flutter_user_sdk/models/events/notification_event.dart';
-import 'package:flutter_user_sdk/notifications/in_app_message.dart';
-import 'package:flutter_user_sdk/notifications/notification_message.dart';
+import 'package:flutter_user_sdk/src/data/repository.dart';
+import 'package:flutter_user_sdk/src/models/events/notification_event.dart';
+import 'package:flutter_user_sdk/src/notifications/in_app_message.dart';
+import 'package:flutter_user_sdk/src/notifications/notification_message.dart';
 
 class NotificationBuilder {
   static dynamic buildInAppMessage({

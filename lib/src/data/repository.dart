@@ -1,15 +1,15 @@
 import 'dart:convert';
 
-import 'package:flutter_user_sdk/data/cache_repository.dart';
-import 'package:flutter_user_sdk/data/user_api_service.dart';
-import 'package:flutter_user_sdk/models/customer.dart';
-import 'package:flutter_user_sdk/models/customer_extended_info.dart';
-import 'package:flutter_user_sdk/models/device_information.dart';
-import 'package:flutter_user_sdk/models/events/custom_event.dart';
-import 'package:flutter_user_sdk/models/events/notification_event.dart';
-import 'package:flutter_user_sdk/models/events/logout_event.dart';
-import 'package:flutter_user_sdk/models/events/product_event.dart';
-import 'package:flutter_user_sdk/models/events/screen_event.dart';
+import 'package:flutter_user_sdk/src/data/cache_repository.dart';
+import 'package:flutter_user_sdk/src/data/user_api_service.dart';
+import 'package:flutter_user_sdk/src/models/customer.dart';
+import 'package:flutter_user_sdk/src/models/customer_extended_info.dart';
+import 'package:flutter_user_sdk/src/models/device_information.dart';
+import 'package:flutter_user_sdk/src/models/events/custom_event.dart';
+import 'package:flutter_user_sdk/src/models/events/notification_event.dart';
+import 'package:flutter_user_sdk/src/models/events/logout_event.dart';
+import 'package:flutter_user_sdk/src/models/events/product_event.dart';
+import 'package:flutter_user_sdk/src/models/events/screen_event.dart';
 
 class Repository {
   final UserApiService service;

@@ -1,12 +1,13 @@
 import 'package:dio/dio.dart';
-import 'package:flutter_user_sdk/data/cache_repository.dart';
-import 'package:flutter_user_sdk/data/interceptors/request_handler_interceptor.dart';
-import 'package:flutter_user_sdk/flutter_user_sdk.dart';
-import 'package:flutter_user_sdk/models/customer_extended_info.dart';
-import 'package:flutter_user_sdk/models/events/custom_event.dart';
-import 'package:flutter_user_sdk/models/events/notification_event.dart';
-import 'package:flutter_user_sdk/models/events/logout_event.dart';
-import 'package:flutter_user_sdk/models/events/screen_event.dart';
+
+import 'package:flutter_user_sdk/src/data/cache_repository.dart';
+import 'package:flutter_user_sdk/src/data/interceptors/request_handler_interceptor.dart';
+import 'package:flutter_user_sdk/src/models/customer_extended_info.dart';
+import 'package:flutter_user_sdk/src/models/events/custom_event.dart';
+import 'package:flutter_user_sdk/src/models/events/notification_event.dart';
+import 'package:flutter_user_sdk/src/models/events/logout_event.dart';
+import 'package:flutter_user_sdk/src/models/events/product_event.dart';
+import 'package:flutter_user_sdk/src/models/events/screen_event.dart';
 
 import 'package:retrofit/retrofit.dart';
 

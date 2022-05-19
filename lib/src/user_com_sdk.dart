@@ -1,18 +1,18 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_user_sdk/data/cache_repository.dart';
-import 'package:flutter_user_sdk/data/repository.dart';
-import 'package:flutter_user_sdk/data/requests_retry_service.dart';
-import 'package:flutter_user_sdk/data/user_api_service.dart';
-import 'package:flutter_user_sdk/models/customer.dart';
-import 'package:flutter_user_sdk/models/events/custom_event.dart';
-import 'package:flutter_user_sdk/models/events/product_event.dart';
-import 'package:flutter_user_sdk/models/events/screen_event.dart';
-import 'package:flutter_user_sdk/notifications/in_app_message.dart';
-import 'package:flutter_user_sdk/notifications/notification_adapter.dart';
-import 'package:flutter_user_sdk/notifications/notification_builder.dart';
-import 'package:flutter_user_sdk/notifications/notification_message.dart';
-import 'package:flutter_user_sdk/notifications/notification_service.dart';
-import 'package:flutter_user_sdk/utils/connection_service.dart';
+import 'package:flutter_user_sdk/src/data/cache_repository.dart';
+import 'package:flutter_user_sdk/src/data/repository.dart';
+import 'package:flutter_user_sdk/src/data/requests_retry_service.dart';
+import 'package:flutter_user_sdk/src/data/user_api_service.dart';
+import 'package:flutter_user_sdk/src/models/customer.dart';
+import 'package:flutter_user_sdk/src/models/events/custom_event.dart';
+import 'package:flutter_user_sdk/src/models/events/product_event.dart';
+import 'package:flutter_user_sdk/src/models/events/screen_event.dart';
+import 'package:flutter_user_sdk/src/notifications/in_app_message.dart';
+import 'package:flutter_user_sdk/src/notifications/notification_adapter.dart';
+import 'package:flutter_user_sdk/src/notifications/notification_builder.dart';
+import 'package:flutter_user_sdk/src/notifications/notification_message.dart';
+import 'package:flutter_user_sdk/src/notifications/notification_service.dart';
+import 'package:flutter_user_sdk/src/utils/connection_service.dart';
 
 class UserComSDK {
   /// Creates or gets object instance

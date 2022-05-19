@@ -1,4 +1,4 @@
-import 'package:flutter_user_sdk/notifications/notification_adapter.dart';
+import 'package:flutter_user_sdk/src/notifications/notification_adapter.dart';
 import 'package:json_annotation/json_annotation.dart';
 
 part 'notification_message.g.dart';

@@ -1,5 +1,5 @@
-import 'package:flutter_user_sdk/notifications/in_app_message.dart';
-import 'package:flutter_user_sdk/notifications/notification_message.dart';
+import 'package:flutter_user_sdk/src/notifications/in_app_message.dart';
+import 'package:flutter_user_sdk/src/notifications/notification_message.dart';
 
 enum NotificationType { push, inApp }
 

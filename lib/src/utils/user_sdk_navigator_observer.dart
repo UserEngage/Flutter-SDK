@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_user_sdk/flutter_user_sdk.dart';
+import 'package:flutter_user_sdk/src/user_com_sdk.dart';
 
 class UserSdkNavigatorObserver extends NavigatorObserver {
   @override

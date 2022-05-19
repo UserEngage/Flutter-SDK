@@ -1,6 +1,6 @@
 import 'package:dio/dio.dart';
-import 'package:flutter_user_sdk/data/interceptors/request_handler_interceptor.dart';
-import 'package:flutter_user_sdk/data/user_api_service.dart';
+import 'package:flutter_user_sdk/src/data/interceptors/request_handler_interceptor.dart';
+import 'package:flutter_user_sdk/src/data/user_api_service.dart';
 
 extension RequestOptionsSerializer on RequestOptions {
   Map<String, dynamic> toJson() {

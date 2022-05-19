@@ -3,9 +3,9 @@ import 'dart:developer';
 
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_user_sdk/data/cache_repository.dart';
-import 'package:flutter_user_sdk/utils/connection_service.dart';
-import 'package:flutter_user_sdk/utils/extensions/request_options_serializer.dart';
+import 'package:flutter_user_sdk/src/data/cache_repository.dart';
+import 'package:flutter_user_sdk/src/utils/connection_service.dart';
+import 'package:flutter_user_sdk/src/utils/extensions/request_options_serializer.dart';
 
 class RequestsRetryService {
   final CacheRepository cacheRepository;

@@ -4,9 +4,9 @@ import 'dart:developer';
 import 'package:awesome_notifications/awesome_notifications.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
-import 'package:flutter_user_sdk/notifications/notification_adapter.dart';
-import 'package:flutter_user_sdk/utils/connection_service.dart';
-import 'package:flutter_user_sdk/utils/extensions/notification_converters.dart';
+import 'package:flutter_user_sdk/src/notifications/notification_adapter.dart';
+import 'package:flutter_user_sdk/src/utils/connection_service.dart';
+import 'package:flutter_user_sdk/src/utils/extensions/notification_converters.dart';
 
 class NotificationService {
   static const notificationChannelKey = 'user_com_channel';

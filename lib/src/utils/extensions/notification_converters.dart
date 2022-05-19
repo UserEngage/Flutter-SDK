@@ -1,6 +1,6 @@
 import 'package:awesome_notifications/awesome_notifications.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
-import 'package:flutter_user_sdk/notifications/notification_service.dart';
+import 'package:flutter_user_sdk/src/notifications/notification_service.dart';
 
 extension ReceivedActionToRemoteMessage on ReceivedAction {
   RemoteMessage toRemoteMessage() {

@@ -1,4 +1,4 @@
-import 'package:flutter_user_sdk/models/customer.dart';
+import 'package:flutter_user_sdk/src/models/customer.dart';
 
 class CustomerExtendedInfo {
   final String? userKey;
