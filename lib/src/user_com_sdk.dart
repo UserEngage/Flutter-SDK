@@ -180,13 +180,14 @@ class UserComSDK {
               NotificationAdapter.fromJson(message.data);
 
           if (notificationAdapter.type == NotificationType.inApp) {
+            final inAppMessage = notificationAdapter.message as InAppMessage;
             if (onInAppMessage != null) {
-              onInAppMessage(message as InAppMessage);
+              onInAppMessage(inAppMessage);
             } else {
               NotificationBuilder.buildInAppMessage(
                 context: context,
                 repository: _repository,
-                message: notificationAdapter.message as InAppMessage,
+                message: inAppMessage,
               );
             }
           }
