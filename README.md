@@ -1,6 +1,6 @@
-# flutter_user_sdk
+# User.com Flutter SDK (flutter_user_sdk)
 
-User.com package used to help developers tracking user activities in app.
+User.com package helps developers track user activities inside the app. Flutter 2 & Flutter 3 versions are supported.
 
 ## Features
 
@@ -9,30 +9,34 @@ User.com package used to help developers tracking user activities in app.
 - Sending screen events
 - Sending notification events
 - Registering and saving user data
-- Receiving FCM notifications
-- Caching unsended requests due to no connection
+- Receiving FCM notifications  (in-app notifications and mobile notifications)
+- Caching unsent requests due to no connection  
 
 ## Installation
-Add newest version of package to Your project using:
+
+Add the newest version of a package to your project using:
+
 ```
 flutter pub add flutter_user_sdk
 ```
 
 ## Getting started
+
 ###### To start using flutter_user_sdk package follow this steps:
-1) Go to User.com and create new project.
-2) Get required variables to initialize SDK - mobileSdkKey and appDomain
-2.1) App domain is url on which app is running
-2.2) To get mobileSdkKey - go to settings -> app settings -> advanced -> mobile sdk keys
-3) SDK uses FCM so Firebase project is required to properly run package.
-3.1) Go to Firebase and create projects for Android and IOS
-3.2) Download google-services.json file and add to project
-3.3) Find server key in firebase project - go to settings -> cloud messaging
-3.4) Paste server key in user.com project settings -> app settings -> advanced -> mobile_fcm_keys
+
+1. Go to User.com and create or login into your app.
+2. Get required variables to initialize SDK - mobileSdkKey and appDomain
+-  App domain is a URL on which an app is running
+-  To get mobileSdkKey - go to the Settings -> App settings -> Advanced -> Mobile SDK keys
+3. SDK uses FCM so Firebase project is required to run the package properly.
+-  Go to Firebase and create projects for Android and iOS
+-  Download google-services.json file and add it to project
+-  Find server key in the firebase project - go to the Settings -> Cloud Messaging
+-  Paste server key in User.com app: Settings -> App settings -> Advanced -> Mobile FCM keys
 
 Your project is ready to go!
 
-###### For more informations visit user.com/flutter_sdk and check detailed documentation.
+###### For more informations visit https://user.com/en/mobile-sdk/ and check detailed documentation.
 
 
 ## Usage 
@@ -58,7 +62,7 @@ class UserComApp extends StatelessWidget {
     return MaterialApp(
       navigatorObservers: [
         // Send screen events when entering new page
-        // If using custom routing, make Your own observer and
+        // If using custom routing, make your own observer and
         // use UserSDK.instance.sendScreenEvent()
         // Dont forget to name Routes in settings
         UserSdkNavigatorObserver(),
@@ -112,7 +116,7 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   void _registerUser() {
-    // Send more informaton about user. You can add custom attributes.
+    // Send more informaton about the user. You can add custom attributes.
     // Attributes must be simple type.
     UserComSDK.instance.registerUser(
       customer: Customer(
@@ -174,13 +178,13 @@ class _MyHomePageState extends State<MyHomePage> {
               onPressed: () => _sendProductEvent(),
               child: const Text('Send product event'),
             ),
-            // Add custom info to current anonymus user
+            // Add custom info to current anonymous user
             ElevatedButton(
               onPressed: () => _registerUser(),
               child: const Text('Register user'),
             ),
             // Destroys reference to user and clear all cache.
-            // It also destroy reference to anonymus User and a new one will be created.
+            // It also destroys reference to anonymous user and a new one will be created.
             ElevatedButton(
               onPressed: () => UserComSDK.instance.logoutUser(),
               child: const Text('Logout user'),
