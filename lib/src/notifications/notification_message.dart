@@ -25,4 +25,6 @@ class PushNotificationMessage extends UserComMessage {
 
   factory PushNotificationMessage.fromJson(Map<String, dynamic> json) =>
       _$PushNotificationMessageFromJson(json);
+
+  Map<String, dynamic> toJson() => _$PushNotificationMessageToJson(this);
 }

@@ -26,4 +26,6 @@ class InAppMessage extends UserComMessage {
 
   factory InAppMessage.fromJson(Map<String, dynamic> json) =>
       _$InAppMessageFromJson(json);
+
+  Map<String, dynamic> toJson() => _$InAppMessageToJson(this);
 }

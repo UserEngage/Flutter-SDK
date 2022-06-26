@@ -7,3 +7,9 @@
 - Resending requests
 - Receiving notifications from FCM, ability to customize
 - Launching urls in Custom Tabs.
+
+## [0.0.2]
+
+- Now package support flutter >=3.0.0
+- Added missing serialization methods to models
+- Update min version of flushbar package
