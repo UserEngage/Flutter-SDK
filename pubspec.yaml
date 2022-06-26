@@ -23,7 +23,7 @@ dependencies:
   path_provider: ^2.0.9
   firebase_analytics: ^9.1.6
   flutter_custom_tabs: ^1.0.4
-  another_flushbar: ^1.10.28
+  another_flushbar: 1.10.28
   awesome_notifications: ^0.6.21
 
 dev_dependencies:
