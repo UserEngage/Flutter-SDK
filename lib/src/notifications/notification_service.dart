@@ -45,9 +45,11 @@ class NotificationService {
       messageController.add(message);
     });
 
-    AwesomeNotifications().actionStream.listen((event) {
-      messageController.add(event.toRemoteMessage());
-    });
+    await AwesomeNotifications().setListeners(
+      onActionReceivedMethod: (receivedAction) async {
+        messageController.add(receivedAction.toRemoteMessage());
+      },
+    );
 
     FirebaseMessaging.onBackgroundMessage(_onBackgroundMessage);
   }
