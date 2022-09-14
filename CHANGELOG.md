@@ -13,3 +13,8 @@
 - Now package support flutter >=3.0.0
 - Added missing serialization methods to models
 - Update min version of flushbar package
+
+## [0.0.3-beta.1]
+
+- Changed dependency of Awesome Notifcations
+- Ask for FirebaseMessaging permissions

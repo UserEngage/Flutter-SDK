@@ -1,6 +1,6 @@
 name: flutter_user_sdk
 description: UserComSDK that simplify sending events and receiving campaign notifications
-version: 0.0.2
+version: 0.0.3-beta.1
 homepage: https://github.com/UserEngage/Flutter-SDK
 
 environment:
@@ -24,7 +24,7 @@ dependencies:
   firebase_analytics: ^9.1.6
   flutter_custom_tabs: ^1.0.4
   another_flushbar: ^1.10.29
-  awesome_notifications: 0.7.0-beta.6
+  awesome_notifications: ^0.7.0-beta.6
   json_annotation: ^4.5.0
 
 dev_dependencies:
