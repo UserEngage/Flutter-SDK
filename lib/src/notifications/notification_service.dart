@@ -46,12 +46,16 @@ class NotificationService {
     });
 
     await AwesomeNotifications().setListeners(
-      onActionReceivedMethod: (receivedAction) async {
-        messageController.add(receivedAction.toRemoteMessage());
-      },
+      onActionReceivedMethod: _onActionReceivedMethod,
     );
 
     FirebaseMessaging.onBackgroundMessage(_onBackgroundMessage);
+  }
+
+  static Future<void> _onActionReceivedMethod(
+    ReceivedAction receivedAction,
+  ) async {
+    messageController.add(receivedAction.toRemoteMessage());
   }
 
   static Future<void> _onBackgroundMessage(RemoteMessage message) async {
@@ -105,6 +109,8 @@ class NotificationService {
 
   static Future<void> _setupFirebase() async {
     await Firebase.initializeApp();
+
+    await FirebaseMessaging.instance.requestPermission();
 
     await FirebaseMessaging.instance
         .setForegroundNotificationPresentationOptions(
