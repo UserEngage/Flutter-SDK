@@ -50,9 +50,9 @@ abstract class DeviceInformation {
         osType: android,
         version: androidInfo.version.incremental.toString(),
         sdk: androidInfo.version.sdkInt.toString(),
-        device: androidInfo.device ?? unknown,
-        model: androidInfo.model ?? unknown,
-        manufacturer: androidInfo.manufacturer ?? unknown,
+        device: androidInfo.device,
+        model: androidInfo.model,
+        manufacturer: androidInfo.manufacturer,
         fcmToken: fcmToken,
       ).toJson();
     } else if (Platform.isIOS) {

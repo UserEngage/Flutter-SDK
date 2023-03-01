@@ -18,3 +18,9 @@
 
 - Changed dependency of Awesome Notifcations
 - Ask for FirebaseMessaging permissions
+
+## [0.0.4]
+
+- Removed Awesome Notifications
+- Introduced Flutter Local Notifications
+- Updated README for 

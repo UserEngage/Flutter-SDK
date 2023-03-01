@@ -10,32 +10,109 @@ User.com package helps developers track user activities inside the app. Flutter 
 - Sending notification events
 - Registering and saving user data
 - Receiving FCM notifications  (in-app notifications and mobile notifications)
-- Caching unsent requests due to no connection  
+- Caching unsent requests due to no connection 
+- Resending request when connection is available 
+
+# Warning
+We are in proccess of migration from displaying notifications via flutter_local_notifications to native Firebase Messaging. Currently our plaftom do not support this and package will need additional steps to integrate which is described in Project Integration. We hope to migrate as soon as possible and make flutter_user_sdk simplier to integrate :)
 
 ## Installation
 
 Add the newest version of a package to your project using:
 
-```
-flutter pub add flutter_user_sdk
-```
+
+    flutter pub add flutter_user_sdk
+
 
 ## Getting started
 
-###### To start using flutter_user_sdk package follow this steps:
+#### To start using flutter_user_sdk package follow this steps:
 
-1. Go to User.com and create or login into your app.
-2. Get required variables to initialize SDK - mobileSdkKey and appDomain
--  App domain is a URL on which an app is running
+###### 1.  Go to User.com and create or login into your app.
+###### 2.  Get required variables to initialize SDK - mobileSdkKey and appDomain
+-   App domain is a URL on which an app is running
 -  To get mobileSdkKey - go to the Settings -> App settings -> Advanced -> Mobile SDK keys
-3. SDK uses FCM so Firebase project is required to run the package properly.
+###### 3. SDK uses FCM so Firebase project is required to run the package properly.
 -  Go to Firebase and create projects for Android and iOS
--  Download google-services.json file and add it to project
--  Find server key in the firebase project - go to the Settings -> Cloud Messaging
+-  Download google-services.json and GoogleServices-Info.plist files and add it to project
+-  Create .p8 APN key in App Store Connect and paste it into Firebase Project
+-  Find server key in the Firebase Project - go to the Settings -> Cloud Messaging
 -  Paste server key in User.com app: Settings -> App settings -> Advanced -> Mobile FCM keys
 
-Your project is ready to go!
+## Project Integration
 
+#### IOS - AppDelegate.swift
+
+    import UIKit
+    import Flutter
+    import flutter_local_notifications
+
+    @UIApplicationMain
+    @objc class AppDelegate: FlutterAppDelegate {
+
+    override func application(
+        _ application: UIApplication,
+        didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?
+    ) -> Bool {
+        // This is required to make any communication available in the action isolate.
+        FlutterLocalNotificationsPlugin.setPluginRegistrantCallback { (registry) in
+            GeneratedPluginRegistrant.register(with: registry)
+        }
+
+        if #available(iOS 10.0, *) {
+        UNUserNotificationCenter.current().delegate = self as UNUserNotificationCenterDelegate
+        }
+
+        GeneratedPluginRegistrant.register(with: self)
+        return super.application(application, didFinishLaunchingWithOptions: launchOptions)
+        }
+    }
+    
+
+
+
+#### Android
+
+Android uses flutter_local_notifications to display native notifications. Follow steps to add support for this library in Your project:  
+
+##### 1. Add your notification.png icon that will be displayed in notification. Place it under android/src/main/res/drawable folder.
+
+##### 2. Version 10+ on the plugin now relies on desugaring to support scheduled notifications with backwards compatibility on older versions of Android. Developers will need to update their application's Gradle file at android/app/build.gradle. Please see the link on desugaring for details but the main parts needed in this Gradle file would be
+
+    android {
+        defaultConfig {
+            multiDexEnabled true
+        }
+
+        compileOptions {
+            // Flag to enable support for the new language APIs
+            coreLibraryDesugaringEnabled true
+            // Sets Java compatibility to Java 8
+            sourceCompatibility JavaVersion.VERSION_1_8
+            targetCompatibility JavaVersion.VERSION_1_8
+        }
+    }
+
+    dependencies {
+        coreLibraryDesugaring 'com.android.tools:desugar_jdk_libs:1.1.5'
+    }
+
+
+#### Lib also requires
+
+    android {
+        compileSdkVersion 33
+        ...
+    }
+
+#### Note
+There have been reports that enabling desugaring may result in a Flutter apps crashing on Android 12L and above. This would be an issue with Flutter itself, not the plugin. One possible fix is adding the WindowManager library as a dependency:
+
+    dependencies {
+        implementation 'androidx.window:window:1.0.0'
+        implementation 'androidx.window:window-java:1.0.0'
+        ...
+    }
 ###### For more informations visit https://user.com/en/mobile-sdk/ and check detailed documentation.
 
 

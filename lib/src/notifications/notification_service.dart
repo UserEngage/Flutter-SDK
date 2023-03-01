@@ -1,18 +1,18 @@
 import 'dart:async';
 import 'dart:developer';
-
-import 'package:awesome_notifications/awesome_notifications.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_user_sdk/src/models/events/notification_event.dart';
 import 'package:flutter_user_sdk/src/notifications/notification_adapter.dart';
+import 'package:flutter_user_sdk/src/notifications/notification_message.dart';
 import 'package:flutter_user_sdk/src/utils/connection_service.dart';
-import 'package:flutter_user_sdk/src/utils/extensions/notification_converters.dart';
+import 'package:flutter_user_sdk/src/utils/local_notification_utils.dart';
+import 'dart:math' as math;
 
 class NotificationService {
   static const notificationChannelKey = 'user_com_channel';
-  static const _channelName = 'User channel';
-  static const _channelDescription = 'Engaging interactions with users';
+  static const channelName = 'User channel';
 
   static bool isInitialized = false;
 
@@ -26,7 +26,8 @@ class NotificationService {
       if (onTokenReceived != null) {
         onTokenReceived(token);
       }
-      await _initializeLocalNotifications();
+
+      await initializeLocalNotifications();
 
       _onMessageReceived();
 
@@ -45,30 +46,24 @@ class NotificationService {
       messageController.add(message);
     });
 
-    await AwesomeNotifications().setListeners(
-      onActionReceivedMethod: _onActionReceivedMethod,
-    );
-
     FirebaseMessaging.onBackgroundMessage(_onBackgroundMessage);
   }
 
-  static Future<void> _onActionReceivedMethod(
-    ReceivedAction receivedAction,
-  ) async {
-    messageController.add(receivedAction.toRemoteMessage());
-  }
-
   static Future<void> _onBackgroundMessage(RemoteMessage message) async {
+    await Firebase.initializeApp();
     if (NotificationAdapter.isUserComMessage(message.data)) {
       final notifiaction = NotificationAdapter.fromJson(message.data);
 
       if (notifiaction.type == NotificationType.push) {
-        await AwesomeNotifications().createNotification(
-          content: message.toNotificationContent(),
+        final data = notifiaction.message as PushNotificationMessage;
+        await FlutterLocalNotificationsPlugin().show(
+          math.Random().nextInt(100),
+          data.title,
+          data.message,
+          notificationDetails,
         );
       }
     }
-    return Future.value(null);
   }
 
   static Future<bool> _isPermssionGranted() async {
@@ -91,20 +86,6 @@ class NotificationService {
       return token;
     }
     return null;
-  }
-
-  static Future<void> _initializeLocalNotifications() async {
-    await AwesomeNotifications().initialize(
-      null,
-      [
-        NotificationChannel(
-          channelKey: notificationChannelKey,
-          channelName: _channelName,
-          channelDescription: _channelDescription,
-        )
-      ],
-      debug: true,
-    );
   }
 
   static Future<void> _setupFirebase() async {
