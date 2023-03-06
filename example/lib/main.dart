@@ -1,6 +1,7 @@
 import 'dart:math';
 
 import 'package:example/test_data.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_user_sdk/flutter_user_sdk.dart';
 
@@ -10,15 +11,26 @@ void main() async {
   // Find your keys on https://user.com/pl/
   // NOTE: ADD google-services.json file to run app.
   await UserComSDK.instance.initialize(
-    mobileSdkKey: '',
-    appDomain: '',
-  );
+      mobileSdkKey: 'paste_your_key_from_user_com',
+      appDomain: 'app_domain_is_base_url',
+      fcmToken: 'your_token_fetched_from_firebase');
 
   runApp(const UserComApp());
 }
 
-class UserComApp extends StatelessWidget {
+class UserComApp extends StatefulWidget {
   const UserComApp({Key? key}) : super(key: key);
+
+  @override
+  State<UserComApp> createState() => _UserComAppState();
+}
+
+class _UserComAppState extends State<UserComApp> {
+  @override
+  void initState() {
+    FirebaseSimpleService().initialize(context);
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -97,8 +109,6 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
-    UserComSDK.instance.buildNotificationOnMessageReceived(context: context);
-
     return Scaffold(
       appBar: AppBar(title: const Text('User SDK Exapmle App')),
       body: Container(
@@ -156,5 +166,58 @@ class _MyHomePageState extends State<MyHomePage> {
         ),
       ),
     );
+  }
+}
+
+// Simplified service for handling User.com messages that are pushed via FirebaseMessaging.
+// Remember to fetch FCM token and pass it to [UserSDK.instance.initialize()].
+class FirebaseSimpleService {
+  FirebaseSimpleService._();
+
+  factory FirebaseSimpleService() {
+    return _instance;
+  }
+
+  static final FirebaseSimpleService _instance = FirebaseSimpleService._();
+
+  void initialize(BuildContext context) {
+    // Used to init local notifications. Add this
+    // only when [UserComSDK.instance.showBackgroundMessage()] is called
+    UserComSDK.instance.initializeBackgroundMessages();
+
+    onMessage(context);
+    FirebaseMessaging.onBackgroundMessage(_onBackgroundMessage);
+  }
+
+  void onMessage(BuildContext context) {
+    FirebaseMessaging.onMessage.listen(
+      (event) {
+        if (UserComSDK.instance.isUserComMessage(event.data)) {
+          UserComSDK.instance.buildNotificationOnMessageReceived(
+            context: context,
+            message: event,
+            // Displaying messages can be customized with [onInAppMessage]
+            // and [onNotificationMessage]
+          );
+        }
+
+        // ... Process on other messages coming from FCM
+      },
+    );
+  }
+
+  static Future<void> _onBackgroundMessage(RemoteMessage message) async {
+    if (UserComSDK.instance.isUserComMessage(message.data)) {
+      final pushNotification = UserComSDK.instance.getPushMessage(message.data);
+      if (pushNotification != null) {
+        // ... Display your push using local notifications.
+
+        // Or use [showBackgroudMessage]. On some devices it is not
+        // working right now in terminated state. We are debuggin issue.
+        // Do not forget to call [UseComSDK.instance.initializeBackgroundMessage()]
+        // If errors occurs go to flutter_local_notifications package and see their guide
+        UserComSDK.instance.showBackgroundMessage(pushNotification);
+      }
+    }
   }
 }

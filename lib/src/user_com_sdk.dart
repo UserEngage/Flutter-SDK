@@ -1,3 +1,4 @@
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_user_sdk/src/data/cache_repository.dart';
 import 'package:flutter_user_sdk/src/data/repository.dart';
@@ -12,8 +13,8 @@ import 'package:flutter_user_sdk/src/notifications/in_app_message.dart';
 import 'package:flutter_user_sdk/src/notifications/notification_adapter.dart';
 import 'package:flutter_user_sdk/src/notifications/notification_builder.dart';
 import 'package:flutter_user_sdk/src/notifications/notification_message.dart';
-import 'package:flutter_user_sdk/src/notifications/notification_service.dart';
 import 'package:flutter_user_sdk/src/utils/connection_service.dart';
+import 'package:flutter_user_sdk/src/utils/local_notification_utils.dart';
 
 class UserComSDK {
   /// Creates or gets object instance
@@ -48,6 +49,8 @@ class UserComSDK {
   /// You need to create Firebase project and add google-services.json files.
   String? _fcmToken;
 
+  static const _notificationChannelKey = 'user_com_channel';
+
   /// Trigger initialize method before You use any SDK methods.
   ///
   /// This function setup repositories and services.
@@ -56,12 +59,14 @@ class UserComSDK {
     required String mobileSdkKey,
     String? integrationsApiKey,
     required String appDomain,
+    String? fcmToken,
     bool enableLogging = true,
   }) async {
     _mobileSdkKey = mobileSdkKey;
     _integrationsApiKey = integrationsApiKey;
     _appDomain = appDomain;
     _enableLogging = enableLogging;
+    _fcmToken = fcmToken;
 
     _cacheRepository = CacheRepository();
     await _cacheRepository.initialize();
@@ -70,10 +75,6 @@ class UserComSDK {
 
     await ConnectionService.instance.initialize(
       connectedOnInitialize: () async {
-        await NotificationService.initialize(
-          onTokenReceived: (token) => _fcmToken = token,
-        );
-
         await _registerAnonymousUserSession(fcmToken: _fcmToken);
 
         RequestsRetryService(_cacheRepository).resendRequests();
@@ -82,17 +83,16 @@ class UserComSDK {
         await _registerAnonymousUserSession();
       },
       onConnectionRestored: () async {
-        if (!NotificationService.isInitialized) {
-          await NotificationService.initialize(
-            onTokenReceived: (token) => _fcmToken = token,
-          );
-        }
-
         RequestsRetryService(_cacheRepository).resendRequests(
           onUserKeyChanged: () => _setupClient(),
         );
       },
     );
+  }
+
+  Future<void> setFcmToken(String token) async {
+    await _registerAnonymousUserSession(fcmToken: _fcmToken);
+    _fcmToken = token;
   }
 
   /// Used to notify user.com that user logs into app.
@@ -181,55 +181,75 @@ class UserComSDK {
   /// App will show default messages.
   ///
   /// You can handle messages (save / display it) by declaring optional functions.
+
   void buildNotificationOnMessageReceived({
     required BuildContext context,
+    required RemoteMessage message,
     Function(InAppMessage)? onInAppMessage,
     Function(PushNotificationMessage)? onNotificationMessage,
   }) {
-    if (!NotificationService.messageController.hasListener) {
-      NotificationService.messageController.stream.listen(
-        (message) {
-          if (!NotificationAdapter.isUserComMessage(message.data)) return;
+    if (NotificationAdapter.isUserComMessage(message.data)) {
+      final notificationAdapter = NotificationAdapter.fromJson(message.data);
 
-          final notificationAdapter =
-              NotificationAdapter.fromJson(message.data);
-
-          if (notificationAdapter.type == NotificationType.inApp) {
-            final inAppMessage = notificationAdapter.message as InAppMessage;
-            if (onInAppMessage != null) {
-              onInAppMessage(inAppMessage);
-            } else {
-              NotificationBuilder.buildInAppMessage(
-                context: context,
-                repository: _repository,
-                message: inAppMessage,
-              );
-            }
+      if (notificationAdapter.type == NotificationType.inApp) {
+        final inAppMessage = notificationAdapter.message as InAppMessage;
+        if (onInAppMessage != null) {
+          onInAppMessage(inAppMessage);
+        } else {
+          NotificationBuilder.buildInAppMessage(
+            context: context,
+            repository: _repository,
+            message: inAppMessage,
+          );
+        }
+      }
+      if (notificationAdapter.type == NotificationType.push) {
+        final pushMessage =
+            notificationAdapter.message as PushNotificationMessage;
+        if (onNotificationMessage != null) {
+          onNotificationMessage(pushMessage);
+        } else {
+          if (message.from == _notificationChannelKey) {
+            NotificationBuilder.launchCustomTab(
+              repository: _repository,
+              message: pushMessage,
+            );
+          } else {
+            NotificationBuilder.buildPushNotification(
+              context: context,
+              repository: _repository,
+              message: notificationAdapter.message as PushNotificationMessage,
+            );
           }
-          if (notificationAdapter.type == NotificationType.push) {
-            final pushMessage =
-                notificationAdapter.message as PushNotificationMessage;
-            if (onNotificationMessage != null) {
-              onNotificationMessage(pushMessage);
-            } else {
-              if (message.from == NotificationService.notificationChannelKey) {
-                NotificationBuilder.launchCustomTab(
-                  repository: _repository,
-                  message: pushMessage,
-                );
-              } else {
-                NotificationBuilder.buildPushNotification(
-                  context: context,
-                  repository: _repository,
-                  message:
-                      notificationAdapter.message as PushNotificationMessage,
-                );
-              }
-            }
-          }
-        },
-      );
+        }
+      }
     }
+  }
+
+  /// Check if Firebase message is coming from User.com
+  bool isUserComMessage(Map<String, dynamic> json) =>
+      NotificationAdapter.isUserComMessage(json);
+
+  /// If Firebase message data is coming from User.com, parse the message Object
+  /// and retur if it's Push message. Used for displaying in terminated state.
+  PushNotificationMessage? getPushMessage(Map<String, dynamic> json) {
+    final notifiaction = NotificationAdapter.fromJson(json);
+
+    if (notifiaction.type == NotificationType.push) {
+      return notifiaction.message as PushNotificationMessage;
+    }
+    return null;
+  }
+
+  /// Method is using flutter local notifications to show message in terminated state.
+  /// Warning! It is not delivering messages always. We are debuuging this issue.
+  /// You can try write Your own code to push local notifications
+  Future<void> showBackgroundMessage(PushNotificationMessage data) async {
+    await showUserComBackgroundMessage(data);
+  }
+
+  Future<void> initializeBackgroundMessages() async {
+    await initializeLocalNotifications();
   }
 
   void _setupClient() {

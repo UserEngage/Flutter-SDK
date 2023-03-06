@@ -1,11 +1,12 @@
 import 'dart:io';
 
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
-import 'package:flutter_user_sdk/src/notifications/notification_service.dart';
+import 'package:flutter_user_sdk/src/notifications/notification_message.dart';
+import 'dart:math' as math;
 
 const channel = AndroidNotificationChannel(
-  NotificationService.notificationChannelKey,
-  NotificationService.channelName, // title
+  'user_com_channel',
+  'User com channel',
   description: 'User.com channel',
 );
 
@@ -79,4 +80,13 @@ Future<void> requestPermission() async {
           sound: true,
         );
   }
+}
+
+Future<void> showUserComBackgroundMessage(PushNotificationMessage data) async {
+  await FlutterLocalNotificationsPlugin().show(
+    math.Random().nextInt(1000),
+    data.title,
+    data.message,
+    notificationDetails,
+  );
 }
