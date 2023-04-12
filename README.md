@@ -41,79 +41,33 @@ Add the newest version of a package to your project using:
 
 ## Project Integration
 
-#### IOS - AppDelegate.swift
+#### IOS 
 
-    import UIKit
-    import Flutter
-    import flutter_local_notifications
-
-    @UIApplicationMain
-    @objc class AppDelegate: FlutterAppDelegate {
-
-    override func application(
-        _ application: UIApplication,
-        didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?
-    ) -> Bool {
-        // This is required to make any communication available in the action isolate.
-        FlutterLocalNotificationsPlugin.setPluginRegistrantCallback { (registry) in
-            GeneratedPluginRegistrant.register(with: registry)
-        }
-
-        if #available(iOS 10.0, *) {
-        UNUserNotificationCenter.current().delegate = self as UNUserNotificationCenterDelegate
-        }
-
-        GeneratedPluginRegistrant.register(with: self)
-        return super.application(application, didFinishLaunchingWithOptions: launchOptions)
-        }
-    }
-    
-
-
-
+Additional configuration is not required.
 #### Android
+    directory /android
 
-Android uses flutter_local_notifications to display native notifications. Follow steps to add support for this library in Your project:  
-
-##### 1. Add your notification.png icon that will be displayed in notification. Place it under android/src/main/res/drawable folder.
-
-##### 2. Version 10+ on the plugin now relies on desugaring to support scheduled notifications with backwards compatibility on older versions of Android. Developers will need to update their application's Gradle file at android/app/build.gradle. Please see the link on desugaring for details but the main parts needed in this Gradle file would be
-
-    android {
-        defaultConfig {
-            multiDexEnabled true
+    buildscript {
+        ext.kotlin_version = '1.8.10'
+        repositories {
+            google()
+            mavenCentral()
         }
 
-        compileOptions {
-            // Flag to enable support for the new language APIs
-            coreLibraryDesugaringEnabled true
-            // Sets Java compatibility to Java 8
-            sourceCompatibility JavaVersion.VERSION_1_8
-            targetCompatibility JavaVersion.VERSION_1_8
+        dependencies {
+            classpath 'com.android.tools.build:gradle:7.4.0'
+            classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+            classpath 'com.google.gms:google-services:4.3.3'
         }
     }
 
-    dependencies {
-        coreLibraryDesugaring 'com.android.tools:desugar_jdk_libs:1.1.5'
-    }
-
-
-#### Lib also requires
+    directory /android/app
 
     android {
         compileSdkVersion 33
         ...
     }
 
-#### Note
-There have been reports that enabling desugaring may result in a Flutter apps crashing on Android 12L and above. This would be an issue with Flutter itself, not the plugin. One possible fix is adding the WindowManager library as a dependency:
-
-    dependencies {
-        implementation 'androidx.window:window:1.0.0'
-        implementation 'androidx.window:window-java:1.0.0'
-        ...
-    }
-###### For more informations visit https://user.com/en/mobile-sdk/ and check detailed documentation.
 
 
 ## Usage 

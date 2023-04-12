@@ -14,7 +14,6 @@ import 'package:flutter_user_sdk/src/notifications/notification_adapter.dart';
 import 'package:flutter_user_sdk/src/notifications/notification_builder.dart';
 import 'package:flutter_user_sdk/src/notifications/notification_message.dart';
 import 'package:flutter_user_sdk/src/utils/connection_service.dart';
-import 'package:flutter_user_sdk/src/utils/local_notification_utils.dart';
 
 class UserComSDK {
   /// Creates or gets object instance
@@ -239,17 +238,6 @@ class UserComSDK {
       return notifiaction.message as PushNotificationMessage;
     }
     return null;
-  }
-
-  /// Method is using flutter local notifications to show message in terminated state.
-  /// Warning! It is not delivering messages always. We are debuuging this issue.
-  /// You can try write Your own code to push local notifications
-  Future<void> showBackgroundMessage(PushNotificationMessage data) async {
-    await showUserComBackgroundMessage(data);
-  }
-
-  Future<void> initializeBackgroundMessages() async {
-    await initializeLocalNotifications();
   }
 
   void _setupClient() {

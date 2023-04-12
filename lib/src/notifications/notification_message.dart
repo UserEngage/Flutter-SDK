@@ -1,3 +1,4 @@
+import 'package:flutter_user_sdk/flutter_user_sdk.dart';
 import 'package:flutter_user_sdk/src/notifications/notification_adapter.dart';
 import 'package:json_annotation/json_annotation.dart';
 
@@ -13,15 +14,17 @@ class PushNotificationMessage extends UserComMessage {
   final String message;
   @JsonKey(name: 'link')
   final String link;
+  @JsonKey(ignore: true)
+  final NotificationType type;
 
   PushNotificationMessage(
     this.id,
     this.title,
     this.message,
     this.link,
-  );
+  ) : type = NotificationType.push;
 
-  bool get isLinkEmpty => link == 'None';
+  bool get isLinkNotEmpty => link != 'None';
 
   factory PushNotificationMessage.fromJson(Map<String, dynamic> json) =>
       _$PushNotificationMessageFromJson(json);

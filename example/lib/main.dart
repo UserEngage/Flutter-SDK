@@ -180,24 +180,72 @@ class FirebaseSimpleService {
 
   static final FirebaseSimpleService _instance = FirebaseSimpleService._();
 
+  // Init all Firebase methods
   void initialize(BuildContext context) {
-    // Used to init local notifications. Add this
-    // only when [UserComSDK.instance.showBackgroundMessage()] is called
-    UserComSDK.instance.initializeBackgroundMessages();
-
+    onInitialMessage();
+    onMessageOpenedApp();
     onMessage(context);
     FirebaseMessaging.onBackgroundMessage(_onBackgroundMessage);
+  }
+
+  void onInitialMessage() async {
+    final remoteMessage = await FirebaseMessaging.instance.getInitialMessage();
+    if (remoteMessage == null) return;
+
+    if (UserComSDK.instance.isUserComMessage(remoteMessage.data)) {
+      final message = UserComSDK.instance.getPushMessage(remoteMessage.data);
+
+      if (message != null) {
+        UserComSDK.instance.notificationClickedEvent(
+          id: message.id,
+          type: message.type,
+        );
+
+        if (message.isLinkNotEmpty) {
+          // Open webview with link
+        }
+
+        // process with User.com Push Message
+      }
+    }
+
+    // process other Firebase Messages
+  }
+
+  void onMessageOpenedApp() {
+    FirebaseMessaging.onMessageOpenedApp.listen(
+      (event) {
+        if (UserComSDK.instance.isUserComMessage(event.data)) {
+          final message = UserComSDK.instance.getPushMessage(event.data);
+
+          if (message != null) {
+            UserComSDK.instance.notificationClickedEvent(
+              id: message.id,
+              type: message.type,
+            );
+
+            if (message.isLinkNotEmpty) {
+              // Open webview with link
+            }
+
+            // process with User.com Push Message
+          }
+        }
+      },
+
+      // process other Firebase Messages
+    );
   }
 
   void onMessage(BuildContext context) {
     FirebaseMessaging.onMessage.listen(
       (event) {
         if (UserComSDK.instance.isUserComMessage(event.data)) {
+          // Displaying messages in [buildNotificationOnMessageReceived]
+          // can be customized using [onInAppMessage] and [onNotificationMessage]
           UserComSDK.instance.buildNotificationOnMessageReceived(
             context: context,
             message: event,
-            // Displaying messages can be customized with [onInAppMessage]
-            // and [onNotificationMessage]
           );
         }
 
@@ -206,18 +254,5 @@ class FirebaseSimpleService {
     );
   }
 
-  static Future<void> _onBackgroundMessage(RemoteMessage message) async {
-    if (UserComSDK.instance.isUserComMessage(message.data)) {
-      final pushNotification = UserComSDK.instance.getPushMessage(message.data);
-      if (pushNotification != null) {
-        // ... Display your push using local notifications.
-
-        // Or use [showBackgroudMessage]. On some devices it is not
-        // working right now in terminated state. We are debuggin issue.
-        // Do not forget to call [UseComSDK.instance.initializeBackgroundMessage()]
-        // If errors occurs go to flutter_local_notifications package and see their guide
-        UserComSDK.instance.showBackgroundMessage(pushNotification);
-      }
-    }
-  }
+  static Future<void> _onBackgroundMessage(RemoteMessage message) async {}
 }

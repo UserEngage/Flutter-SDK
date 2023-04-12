@@ -38,6 +38,7 @@ abstract class DeviceInformation {
   static const String unknown = 'Unknown';
   static const String android = 'Android';
   static const String ios = 'IOS';
+  static const String libVersion = '0.0.5';
 
   static Future<Map<String, dynamic>> getPlatformInformation({
     String? fcmToken,
@@ -46,7 +47,7 @@ abstract class DeviceInformation {
       final androidInfo = await DeviceInfoPlugin().androidInfo;
 
       return DeviceAndroidInformation(
-        libraryVersion: androidInfo.version.sdkInt.toString(),
+        libraryVersion: libVersion,
         osType: android,
         version: androidInfo.version.incremental.toString(),
         sdk: androidInfo.version.sdkInt.toString(),
@@ -59,7 +60,7 @@ abstract class DeviceInformation {
       final iosInfo = await DeviceInfoPlugin().iosInfo;
 
       return DeviceIosInformation(
-        libraryVersion: iosInfo.systemVersion ?? unknown,
+        libraryVersion: libVersion,
         osType: ios,
         version: iosInfo.systemVersion ?? unknown,
         sdk: iosInfo.systemVersion ?? unknown,

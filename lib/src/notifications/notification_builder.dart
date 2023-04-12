@@ -99,7 +99,7 @@ class NotificationBuilder {
       margin: const EdgeInsets.all(16),
       borderRadius: BorderRadius.circular(6),
       onTap: (_) async {
-        if (!message.isLinkEmpty) {
+        if (message.isLinkNotEmpty) {
           unawaited(
             repository.sendNotificationEvent(
               id: message.id,
@@ -122,7 +122,7 @@ class NotificationBuilder {
     required Repository repository,
     required PushNotificationMessage message,
   }) async {
-    if (!message.isLinkEmpty) {
+    if (message.isLinkNotEmpty) {
       unawaited(
         repository.sendNotificationEvent(
           id: message.id,
