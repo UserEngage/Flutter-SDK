@@ -24,3 +24,15 @@
 - Removed Awesome Notifications
 - Introduced Flutter Local Notifications
 - Updated README for 
+
+## [0.0.5]
+
+- Removed Local Notifications
+- Fixed device info lib version
+- Updated example to show how to use package
+- Updated README 
+
+
+## [0.0.6]
+
+- Converted local DateTime to utc in events

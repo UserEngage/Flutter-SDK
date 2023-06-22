@@ -35,7 +35,7 @@ class ProductEvent {
     required this.productId,
     required this.eventType,
     required this.parameters,
-  })  : timestamp = DateTime.now(),
+  })  : timestamp = DateTime.now().toUtc(),
         eventName = 'product';
 
   Map<String, dynamic> toJson() {

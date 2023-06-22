@@ -17,14 +17,14 @@ class NotificationEvent {
     required this.action,
   })  : type = 'in-app-message',
         deliveryIdKey = "in_app_message_delivery_id",
-        timestamp = DateTime.now();
+        timestamp = DateTime.now().toUtc();
 
   NotificationEvent.push({
     required this.id,
     required this.action,
   })  : type = 'push-notification',
         deliveryIdKey = "push_notification_delivery_id",
-        timestamp = DateTime.now();
+        timestamp = DateTime.now().toUtc();
 
   Map<String, dynamic> toJson() {
     return <String, dynamic>{

@@ -5,7 +5,7 @@ class CustomEvent {
   CustomEvent({
     required this.event,
     required this.data,
-  }) : timestamp = DateTime.now();
+  }) : timestamp = DateTime.now().toUtc();
 
   Map<String, dynamic> toJson() {
     return <String, dynamic>{
