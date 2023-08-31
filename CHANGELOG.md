@@ -36,3 +36,9 @@
 ## [0.0.6]
 
 - Converted local DateTime to utc in events
+
+## [0.0.7]
+
+- Upgraded package dependencies
+- Removed flutter custom tabs
+- Added url_launcher pacakge to handle links

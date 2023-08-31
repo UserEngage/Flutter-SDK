@@ -3,11 +3,11 @@ import 'dart:io';
 import 'package:another_flushbar/flushbar.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_custom_tabs/flutter_custom_tabs.dart';
 import 'package:flutter_user_sdk/src/data/repository.dart';
 import 'package:flutter_user_sdk/src/models/events/notification_event.dart';
 import 'package:flutter_user_sdk/src/notifications/in_app_message.dart';
 import 'package:flutter_user_sdk/src/notifications/notification_message.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class NotificationBuilder {
   static dynamic buildInAppMessage({
@@ -35,7 +35,7 @@ class NotificationBuilder {
                         ),
                       );
 
-                      await launch(message.actionUrl!).then(
+                      await launchUrl(Uri.parse(message.actionUrl!)).then(
                         (_) => Navigator.pop(context),
                       );
                     },
@@ -65,7 +65,7 @@ class NotificationBuilder {
                         ),
                       );
 
-                      await launch(message.actionUrl!).then(
+                      await launchUrl(Uri.parse(message.actionUrl!)).then(
                         (_) => Navigator.pop(context),
                       );
                     },
@@ -108,7 +108,7 @@ class NotificationBuilder {
             ),
           );
 
-          await launch(message.link).then(
+          await launchUrl(Uri.parse(message.link)).then(
             (_) => Navigator.maybePop(context),
           );
         } else {
@@ -131,7 +131,7 @@ class NotificationBuilder {
         ),
       );
 
-      await launch(message.link);
+      await launchUrl(Uri.parse(message.link));
     }
   }
 }

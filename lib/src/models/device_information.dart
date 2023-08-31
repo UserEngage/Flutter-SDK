@@ -62,11 +62,11 @@ abstract class DeviceInformation {
       return DeviceIosInformation(
         libraryVersion: libVersion,
         osType: ios,
-        version: iosInfo.systemVersion ?? unknown,
-        sdk: iosInfo.systemVersion ?? unknown,
+        version: iosInfo.systemVersion,
+        sdk: iosInfo.systemVersion,
         device: iosInfo.identifierForVendor ?? unknown,
-        model: iosInfo.model ?? unknown,
-        manufacturer: iosInfo.name ?? unknown,
+        model: iosInfo.model,
+        manufacturer: iosInfo.name,
         fcmToken: fcmToken,
         identifier: await AdvertisingId.id(true) ?? unknown,
       ).toJson();

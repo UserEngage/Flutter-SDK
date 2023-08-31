@@ -1,10 +1,6 @@
 include: package:flutter_lints/flutter.yaml
 
 analyzer:
-
-  strong-mode:
-    implicit-dynamic: false
-
   exclude:
     - "**/*.g.dart"
     - "**/*.ast.gql.dart"

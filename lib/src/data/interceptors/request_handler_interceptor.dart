@@ -31,12 +31,12 @@ class RequestHandlerInterceptor implements Interceptor {
   }
 
   @override
-  void onError(DioError err, ErrorInterceptorHandler handler) {
+  void onError(DioException err, ErrorInterceptorHandler handler) {
     final bool isNoInternetError = err.error is SocketException ||
-        [
-          DioErrorType.connectTimeout,
-          DioErrorType.receiveTimeout,
-          DioErrorType.sendTimeout,
+        <DioExceptionType>[
+          DioExceptionType.connectionTimeout,
+          DioExceptionType.receiveTimeout,
+          DioExceptionType.sendTimeout,
         ].contains(err.type);
 
     if (isNoInternetError) {

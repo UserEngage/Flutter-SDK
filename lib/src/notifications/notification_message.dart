@@ -14,6 +14,7 @@ class PushNotificationMessage extends UserComMessage {
   final String message;
   @JsonKey(name: 'link')
   final String link;
+  // ignore: deprecated_member_use
   @JsonKey(ignore: true)
   final NotificationType type;
 

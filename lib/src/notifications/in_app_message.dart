@@ -17,6 +17,7 @@ class InAppMessage extends UserComMessage {
   final String actionBtn;
   @JsonKey(name: 'action_button_link')
   final String? actionUrl;
+  // ignore: deprecated_member_use
   @JsonKey(ignore: true)
   final NotificationType type;
 

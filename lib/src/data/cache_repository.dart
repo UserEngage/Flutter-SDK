@@ -30,6 +30,7 @@ class CacheRepository {
     requestsBox.delete(key);
   }
 
+  // ignore: library_private_types_in_public_api
   List<_HiveObject> getCachedRequests() {
     List<_HiveObject> requests = [];
 
