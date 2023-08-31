@@ -48,12 +48,13 @@ class RequestsRetryService {
           if ([200, 201, 202].contains(response.statusCode)) {
             cacheRepository.removeRequest(key: key);
           }
-          log('Request ${requestOption.uri} sent');
+          log('Request ${requestOption.uri} sent successfully');
           return response;
         },
       );
     } catch (ex) {
-      log('Could not send cached request. Exception: $ex');
+      log('Resending was unsuccessful. Request will be removed from cache. Exception: $ex');
+      cacheRepository.removeRequest(key: key);
       return null;
     }
   }

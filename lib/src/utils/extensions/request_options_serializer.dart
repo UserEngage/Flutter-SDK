@@ -7,8 +7,8 @@ extension RequestOptionsSerializer on RequestOptions {
     return <String, dynamic>{
       'method': method,
       'sendTimeout': sendTimeout,
-      'receiveTimeout': receiveTimeout,
-      'connectTimeout': connectTimeout,
+      'receiveTimeout': receiveTimeout?.inSeconds,
+      'connectTimeout': connectTimeout?.inSeconds,
       'data': data,
       'path': path,
       'queryParameters': queryParameters,
@@ -34,8 +34,6 @@ extension RequestOptionsSerializer on RequestOptions {
     return RequestOptions(
       method: json['method'],
       sendTimeout: json['sendTimeout'],
-      receiveTimeout: json['receiveTimeout'],
-      connectTimeout: json['connectTimeout'] ?? 0,
       data: json['data'],
       path: json['path'],
       queryParameters: json['queryParameters'] ?? <String, dynamic>{},

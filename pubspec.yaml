@@ -1,6 +1,6 @@
 name: flutter_user_sdk
 description: UserComSDK that simplify sending events and receiving campaign notifications
-version: 0.0.7
+version: 0.0.8
 homepage: https://github.com/UserEngage/Flutter-SDK
 
 environment:
@@ -16,7 +16,7 @@ dependencies:
   retrofit: ^4.0.1
   device_info_plus: ^9.0.3
   dio: ^5.3.2
-  json_serializable: 
+  json_serializable: ^6.7.0
   advertising_id: ^2.4.0
   connectivity_plus: ^4.0.2
   hive: ^2.1.0

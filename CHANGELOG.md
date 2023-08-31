@@ -42,3 +42,8 @@
 - Upgraded package dependencies
 - Removed flutter custom tabs
 - Added url_launcher pacakge to handle links
+
+# [0.0.8]
+
+- fix serialization for cached requests
+- remove request from cache if resending falied
