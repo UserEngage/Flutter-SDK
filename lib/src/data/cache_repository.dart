@@ -30,13 +30,12 @@ class CacheRepository {
     requestsBox.delete(key);
   }
 
-  // ignore: library_private_types_in_public_api
-  List<_HiveObject> getCachedRequests() {
-    List<_HiveObject> requests = [];
+  List<HiveObject> getCachedRequests() {
+    List<HiveObject> requests = [];
 
     for (int i = 0; i < requestsBox.length; i++) {
       requests.add(
-        _HiveObject(
+        HiveObject(
           key: requestsBox.keys.toList()[i],
           object: jsonDecode(requestsBox.values.toList()[i])
               as Map<String, dynamic>,
@@ -60,11 +59,11 @@ class CacheRepository {
   }
 }
 
-class _HiveObject {
+class HiveObject {
   final int key;
   final Map<String, dynamic> object;
 
-  _HiveObject({
+  HiveObject({
     required this.key,
     required this.object,
   });

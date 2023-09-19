@@ -9,23 +9,23 @@ const String userKeyHeaderKey = 'X-User-Key';
 
 class RequestHandlerInterceptor implements Interceptor {
   final String mobileSdkKey;
-  final String? userKey;
+
   final CacheRepository cacheRepository;
-  final Map<String, String> customHeaders;
 
   RequestHandlerInterceptor({
     required this.mobileSdkKey,
     required this.cacheRepository,
-    this.userKey,
-  }) : customHeaders = <String, String>{
-          'Content-Type': 'application/json',
-          'Authorization': 'Token $mobileSdkKey',
-          userKeyHeaderKey: userKey ?? '',
-        };
+  });
 
   @override
   void onRequest(RequestOptions options, RequestInterceptorHandler handler) {
-    options.headers.addAll(customHeaders);
+    options.headers.addAll(
+      <String, String>{
+        'Content-Type': 'application/json',
+        'Authorization': 'Token $mobileSdkKey',
+        userKeyHeaderKey: cacheRepository.getUserKey() ?? '',
+      },
+    );
 
     return handler.next(options);
   }

@@ -47,3 +47,8 @@
 
 - fix serialization for cached requests
 - remove request from cache if resending falied
+
+# [0.1.0]
+
+- fix problems with missing userKey
+- create new user session after logout

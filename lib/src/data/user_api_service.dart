@@ -61,7 +61,6 @@ abstract class UserApiService {
           RequestHandlerInterceptor(
             cacheRepository: cacheRepository,
             mobileSdkKey: mobileSdkKey,
-            userKey: userKey,
           ),
           if (enableLogging)
             LogInterceptor(

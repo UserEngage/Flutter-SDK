@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_user_sdk/src/data/cache_repository.dart';
@@ -159,6 +161,8 @@ class UserComSDK {
   Future<void> logoutUser() async {
     await _repository.logoutUser();
     await _cacheRepository.clearStorage();
+    log('Logout successful. Creating new anonymous session to track user activity');
+    await _registerAnonymousUserSession(fcmToken: _fcmToken);
   }
 
   /// Use this method to notify User.com service that notification was opened
