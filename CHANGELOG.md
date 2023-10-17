@@ -52,3 +52,7 @@
 
 - fix problems with missing userKey
 - create new user session after logout
+
+# [0.1.1]
+
+- update connectivity_plus dependency, which caused IOS build errors
