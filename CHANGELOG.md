@@ -56,3 +56,7 @@
 # [0.1.1]
 
 - update connectivity_plus dependency, which caused IOS build errors
+
+# [0.1.2]
+
+- bumped all packages versions

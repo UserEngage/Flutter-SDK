@@ -46,7 +46,7 @@ class ProductEvent {
       'data': <String, dynamic>{
         'custom_id': productId,
         ...parameters,
-      }
+      },
     };
   }
 

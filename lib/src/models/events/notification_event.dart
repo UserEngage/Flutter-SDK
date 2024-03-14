@@ -33,7 +33,7 @@ class NotificationEvent {
         deliveryIdKey: id,
       },
       "event": _eventName,
-      "timestamp": timestamp.toIso8601String()
+      "timestamp": timestamp.toIso8601String(),
     };
   }
 }

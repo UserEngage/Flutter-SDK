@@ -15,7 +15,7 @@ class ScreenEvent {
         'event': event.name,
         'screen_name': screenName,
       },
-      'event': 'ScreenEvent'
+      'event': 'ScreenEvent',
     };
   }
 }
