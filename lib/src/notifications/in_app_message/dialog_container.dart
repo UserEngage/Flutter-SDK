@@ -13,35 +13,38 @@ class DialogContainer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-        color: message.background.color,
-        image: message.background.isValidUrl
-            ? DecorationImage(
-                image: NetworkImage(message.background.imageUrl),
-                fit: BoxFit.cover,
+    return Material(
+      color: Colors.transparent,
+      child: Container(
+        decoration: BoxDecoration(
+          color: message.background.color,
+          image: message.background.isValidUrl
+              ? DecorationImage(
+                  image: NetworkImage(message.background.imageUrl),
+                  fit: BoxFit.cover,
+                )
+              : null,
+          borderRadius: BorderRadius.circular(6),
+        ),
+        child: Column(
+          mainAxisSize:
+              message.isFullscreen ? MainAxisSize.max : MainAxisSize.min,
+          children: [
+            Align(
+              alignment: message.exitButton.alignment,
+              child: InAppExitButton(exitButtonModel: message.exitButton),
+            ),
+            if (message.isFullscreen)
+              Expanded(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: children,
+                ),
               )
-            : null,
-        borderRadius: BorderRadius.circular(6),
-      ),
-      child: Column(
-        mainAxisSize:
-            message.isFullscreen ? MainAxisSize.max : MainAxisSize.min,
-        children: [
-          Align(
-            alignment: message.exitButton.alignment,
-            child: InAppExitButton(exitButtonModel: message.exitButton),
-          ),
-          if (message.isFullscreen)
-            Expanded(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: children,
-              ),
-            )
-          else
-            ...children,
-        ],
+            else
+              ...children,
+          ],
+        ),
       ),
     );
   }
