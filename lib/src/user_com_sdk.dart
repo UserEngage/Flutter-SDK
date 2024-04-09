@@ -11,10 +11,10 @@ import 'package:flutter_user_sdk/src/models/events/custom_event.dart';
 import 'package:flutter_user_sdk/src/models/events/notification_event.dart';
 import 'package:flutter_user_sdk/src/models/events/product_event.dart';
 import 'package:flutter_user_sdk/src/models/events/screen_event.dart';
-import 'package:flutter_user_sdk/src/notifications/in_app_message.dart';
+import 'package:flutter_user_sdk/src/models/in_app_message_model.dart';
+import 'package:flutter_user_sdk/src/models/notification_message.dart';
 import 'package:flutter_user_sdk/src/notifications/notification_adapter.dart';
 import 'package:flutter_user_sdk/src/notifications/notification_builder.dart';
-import 'package:flutter_user_sdk/src/notifications/notification_message.dart';
 import 'package:flutter_user_sdk/src/utils/connection_service.dart';
 
 class UserComSDK {
@@ -179,38 +179,38 @@ class UserComSDK {
     );
   }
 
-  /// Function needs [BuildContext] to show default messages received from FCM.
-  /// If [onInAppMessage] and [onNotificationMessage] is not declared
-  /// App will show default messages.
-  ///
-  /// You can handle messages (save / display it) by declaring optional functions.
-
+  /// Use [inAppMessageBuilder] and [notificationMessageBuilder] to build custom notification
+  /// [onTap] is called when user interacts with push or inApp notification
   void buildNotificationOnMessageReceived({
     required BuildContext context,
     required RemoteMessage message,
-    Function(InAppMessage)? onInAppMessage,
-    Function(PushNotificationMessage)? onNotificationMessage,
+    required Function(NotificationType type, String link) onTap,
+    Function(InAppMessageModel)? inAppMessageBuilder,
+    Function(PushNotificationMessage)? pushMessageBuilder,
   }) {
     if (NotificationAdapter.isUserComMessage(message.data)) {
       final notificationAdapter = NotificationAdapter.fromJson(message.data);
 
       if (notificationAdapter.type == NotificationType.inApp) {
-        final inAppMessage = notificationAdapter.message as InAppMessage;
-        if (onInAppMessage != null) {
-          onInAppMessage(inAppMessage);
+        final inAppMessage = notificationAdapter.message as InAppMessageModel;
+        if (inAppMessageBuilder != null) {
+          inAppMessageBuilder(inAppMessage);
         } else {
           NotificationBuilder.buildInAppMessage(
             context: context,
             repository: _repository,
             message: inAppMessage,
+            onButtonTap: (value) {
+              onTap.call(NotificationType.inApp, value);
+            },
           );
         }
       }
       if (notificationAdapter.type == NotificationType.push) {
         final pushMessage =
             notificationAdapter.message as PushNotificationMessage;
-        if (onNotificationMessage != null) {
-          onNotificationMessage(pushMessage);
+        if (pushMessageBuilder != null) {
+          pushMessageBuilder(pushMessage);
         } else {
           if (message.from == _notificationChannelKey) {
             NotificationBuilder.launchCustomTab(
@@ -222,6 +222,9 @@ class UserComSDK {
               context: context,
               repository: _repository,
               message: notificationAdapter.message as PushNotificationMessage,
+              onTap: (value) {
+                onTap.call(NotificationType.push, value);
+              },
             );
           }
         }

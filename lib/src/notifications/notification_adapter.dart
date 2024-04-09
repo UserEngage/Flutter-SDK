@@ -1,6 +1,7 @@
+import 'package:flutter_user_sdk/src/models/dto_to_model.dart';
 import 'package:flutter_user_sdk/src/models/events/notification_event.dart';
-import 'package:flutter_user_sdk/src/notifications/in_app_message.dart';
-import 'package:flutter_user_sdk/src/notifications/notification_message.dart';
+import 'package:flutter_user_sdk/src/models/in_app_message_dto.dart';
+import 'package:flutter_user_sdk/src/models/notification_message.dart';
 
 abstract class UserComMessage {}
 
@@ -10,18 +11,23 @@ class NotificationAdapter {
   NotificationAdapter(this.type, this.message);
 
   factory NotificationAdapter.fromJson(Map<String, dynamic> json) {
-    if (json['type'] == '4') {
+    final messageType = json['type'];
+    if (messageType == NotificationType.inApp.value) {
+      final inAppDto = InAppMessageDto.fromJson(json['inapp_message']);
+
       return NotificationAdapter(
         NotificationType.inApp,
-        InAppMessage.fromJson(json),
+        inAppMessageDtoToModel(json['id'], inAppDto),
       );
-    } else if (json['type'] == '1') {
+    } else if (messageType == NotificationType.push.value) {
       return NotificationAdapter(
         NotificationType.push,
         PushNotificationMessage.fromJson(json),
       );
     } else {
-      return throw Exception('This message type is not supported');
+      return throw Exception(
+        'This message type is not supported by User.com SDK',
+      );
     }
   }
 

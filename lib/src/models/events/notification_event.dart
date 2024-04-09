@@ -1,6 +1,12 @@
 enum NotificationAction { clicked, opened }
 
-enum NotificationType { push, inApp }
+enum NotificationType {
+  push('1'),
+  inApp('4');
+
+  final String value;
+  const NotificationType(this.value);
+}
 
 class NotificationEvent {
   final String id;

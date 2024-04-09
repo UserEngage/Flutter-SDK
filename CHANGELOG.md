@@ -60,3 +60,8 @@
 # [0.1.2]
 
 - bumped all packages versions
+
+# [1.0.0]
+
+- Added in app functionality
+- added callback to buildNotificationOnMessageReceived in order to define own behaviour on interact

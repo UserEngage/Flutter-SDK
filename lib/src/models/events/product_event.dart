@@ -1,5 +1,3 @@
-import 'package:json_annotation/json_annotation.dart';
-
 enum ProductEventType {
   addToCart,
   purchase,
@@ -19,7 +17,6 @@ enum ProductEventType {
   promoClick,
 }
 
-@JsonSerializable()
 class ProductEvent {
   final String productId;
 

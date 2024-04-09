@@ -201,10 +201,6 @@ class FirebaseSimpleService {
           type: message.type,
         );
 
-        if (message.isLinkNotEmpty) {
-          // Open webview with link
-        }
-
         // process with User.com Push Message
       }
     }
@@ -223,11 +219,6 @@ class FirebaseSimpleService {
               id: message.id,
               type: message.type,
             );
-
-            if (message.isLinkNotEmpty) {
-              // Open webview with link
-            }
-
             // process with User.com Push Message
           }
         }
@@ -246,6 +237,15 @@ class FirebaseSimpleService {
           UserComSDK.instance.buildNotificationOnMessageReceived(
             context: context,
             message: event,
+            onTap: (type, link) {
+              if (type == NotificationType.push) {
+                // Define here what to do on notification tap
+                // For example launchUrl and dismiss notification
+              }
+              if (type == NotificationType.inApp) {
+                // Define here what to do when user tap button that has link
+              }
+            },
           );
         }
 
