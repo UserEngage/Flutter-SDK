@@ -74,14 +74,15 @@ class Repository {
     required String id,
     required NotificationType type,
     required NotificationAction action,
+    String? url,
   }) async {
     try {
       late NotificationEvent event;
 
       if (type == NotificationType.push) {
-        event = NotificationEvent.push(id: id, action: action);
+        event = NotificationEvent.push(id: id, action: action, url: url);
       } else if (type == NotificationType.inApp) {
-        event = NotificationEvent.inApp(id: id, action: action);
+        event = NotificationEvent.inApp(id: id, action: action, url: url);
       } else {
         throw Exception('Unsupported NotificationType');
       }

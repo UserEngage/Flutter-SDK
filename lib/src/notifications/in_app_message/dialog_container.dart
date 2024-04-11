@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_user_sdk/src/data/repository.dart';
 import 'package:flutter_user_sdk/src/models/in_app_message_model.dart';
 import 'package:flutter_user_sdk/src/notifications/in_app_message/widgets.dart';
 
@@ -6,10 +7,12 @@ class DialogContainer extends StatelessWidget {
   const DialogContainer({
     super.key,
     required this.message,
+    required this.repository,
     this.children = const [],
   });
   final InAppMessageModel message;
   final List<Widget> children;
+  final Repository repository;
 
   @override
   Widget build(BuildContext context) {
@@ -32,7 +35,10 @@ class DialogContainer extends StatelessWidget {
           children: [
             Align(
               alignment: message.exitButton.alignment,
-              child: InAppExitButton(exitButtonModel: message.exitButton),
+              child: InAppExitButton(
+                repository: repository,
+                inAppMessage: message,
+              ),
             ),
             if (message.isFullscreen)
               Expanded(

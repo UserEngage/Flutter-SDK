@@ -1,24 +1,35 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_user_sdk/flutter_user_sdk.dart';
+import 'package:flutter_user_sdk/src/data/repository.dart';
 import 'package:flutter_user_sdk/src/models/in_app_message_model.dart';
 
 class InAppExitButton extends StatelessWidget {
   const InAppExitButton({
     super.key,
-    required this.exitButtonModel,
+    required this.inAppMessage,
+    required this.repository,
   });
 
-  final ExitButtonModel exitButtonModel;
+  final InAppMessageModel inAppMessage;
+  final Repository repository;
 
   @override
   Widget build(BuildContext context) {
-    return exitButtonModel.visible
+    return inAppMessage.exitButton.visible
         ? Padding(
-            padding: exitButtonModel.margin,
+            padding: inAppMessage.exitButton.margin,
             child: IconButton(
-              onPressed: Navigator.of(context).pop,
+              onPressed: () {
+                repository.sendNotificationEvent(
+                  id: inAppMessage.id,
+                  type: NotificationType.inApp,
+                  action: NotificationAction.dismissed,
+                );
+                Navigator.of(context).pop();
+              },
               icon: Icon(
                 Icons.clear,
-                color: exitButtonModel.color,
+                color: inAppMessage.exitButton.color,
               ),
             ),
           )

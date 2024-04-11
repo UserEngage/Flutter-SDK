@@ -18,6 +18,12 @@ class NotificationBuilder {
     required InAppMessageModel message,
     required Function(String value) onButtonTap,
   }) {
+    repository.sendNotificationEvent(
+      id: message.id,
+      action: NotificationAction.displayed,
+      type: NotificationType.inApp,
+    );
+
     return showGeneralDialog<dynamic>(
       context: context,
       pageBuilder: (context, animation, secondaryAnimation) {
@@ -27,6 +33,7 @@ class NotificationBuilder {
             alignment: message.alignment,
             child: DialogContainer(
               message: message,
+              repository: repository,
               children: message.items.map(
                 (item) {
                   if (item is InAppMessageTextModel) {
@@ -42,6 +49,7 @@ class NotificationBuilder {
                           id: message.id,
                           action: NotificationAction.clicked,
                           type: NotificationType.inApp,
+                          url: value.isEmpty ? null : value,
                         );
                       },
                     );
@@ -92,6 +100,11 @@ class NotificationBuilder {
         onTap?.call(message.link);
       },
     ).show(context);
+    repository.sendNotificationEvent(
+      id: message.id,
+      action: NotificationAction.displayed,
+      type: NotificationType.push,
+    );
   }
 
   static Future<void> launchCustomTab({

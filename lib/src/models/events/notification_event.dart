@@ -1,4 +1,4 @@
-enum NotificationAction { clicked, opened }
+enum NotificationAction { displayed, clicked, dismissed }
 
 enum NotificationType {
   push('1'),
@@ -11,8 +11,7 @@ enum NotificationType {
 class NotificationEvent {
   final String id;
   final NotificationAction action;
-
-  static const String _eventName = "NotificationEvent";
+  final String? url;
 
   final String type;
   final String deliveryIdKey;
@@ -21,6 +20,7 @@ class NotificationEvent {
   NotificationEvent.inApp({
     required this.id,
     required this.action,
+    this.url,
   })  : type = 'in-app-message',
         deliveryIdKey = "in_app_message_delivery_id",
         timestamp = DateTime.now().toUtc();
@@ -28,18 +28,12 @@ class NotificationEvent {
   NotificationEvent.push({
     required this.id,
     required this.action,
+    this.url,
   })  : type = 'push-notification',
         deliveryIdKey = "push_notification_delivery_id",
         timestamp = DateTime.now().toUtc();
 
   Map<String, dynamic> toJson() {
-    return <String, dynamic>{
-      "data": {
-        "notification_action": action.name,
-        deliveryIdKey: id,
-      },
-      "event": _eventName,
-      "timestamp": timestamp.toIso8601String(),
-    };
+    return <String, dynamic>{"url": url};
   }
 }
