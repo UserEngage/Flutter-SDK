@@ -31,7 +31,7 @@ dependencies:
     sdk: flutter
   flutter_user_sdk: 
    path: ../
-  firebase_messaging: ^14.7.14
+  firebase_messaging: ^15.1.3
   
 
 

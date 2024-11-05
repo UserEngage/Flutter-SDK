@@ -24,7 +24,7 @@ class ConnectionService {
     required VoidCallback disconnectedOnInitialize,
   }) async {
     final connectivity = Connectivity();
-    _currentConnection = await connectivity.checkConnectivity();
+    _currentConnection = (await connectivity.checkConnectivity()).first;
 
     if (isConnected) {
       connectedOnInitialize();
@@ -34,11 +34,11 @@ class ConnectionService {
 
     _connectionStream = connectivity.onConnectivityChanged.listen(
       (event) async {
-        if (onConnectedFromNoInternet(event)) {
-          _currentConnection = event;
+        if (onConnectedFromNoInternet(event.first)) {
+          _currentConnection = event.first;
           onConnectionRestored();
         }
-        _currentConnection = event;
+        _currentConnection = event.first;
       },
     );
   }

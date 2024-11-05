@@ -65,3 +65,8 @@
 
 - Added in app functionality
 - added callback to buildNotificationOnMessageReceived in order to define own behaviour on interact
+
+# [1.0.1]
+
+- Bump package versions
+- Update connection controller to match new API
