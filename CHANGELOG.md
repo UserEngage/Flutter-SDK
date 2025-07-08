@@ -70,3 +70,11 @@
 
 - Bump package versions
 - Update connection controller to match new API
+
+# [1.0.2]
+
+- Bump package versions
+- Update example directory
+- Extend Customer model
+- Remove unsupported API call with notification displayed
+- buildNotificationOnMessageReceived -> buildNotification

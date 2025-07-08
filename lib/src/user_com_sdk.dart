@@ -106,7 +106,7 @@ class UserComSDK {
   /// Used to add more info to user
   ///
   /// Pass [Customer] and define your own attribues.
-  /// Triggering this function will not create new user.
+  /// Triggering this function will change user status from visitor to user.
   /// It will override information about user created with _registerAnonymusUserSession()
   Future<void> registerUser({Customer? customer}) async {
     await _repository.postUserDeviceInfo(
@@ -167,7 +167,7 @@ class UserComSDK {
 
   /// Use this method to notify User.com service that notification was opened
   /// Trigger this only when You specify [onInAppMessage] and [onNotificationMessage]
-  /// inside [buildNotificationOnMessageReceived] function
+  /// inside [buildNotification] function
   Future<void> notificationClickedEvent({
     required String id,
     required NotificationType type,
@@ -181,7 +181,7 @@ class UserComSDK {
 
   /// Use [inAppMessageBuilder] and [notificationMessageBuilder] to build custom notification
   /// [onTap] is called when user interacts with push or inApp notification
-  void buildNotificationOnMessageReceived({
+  void buildNotification({
     required BuildContext context,
     required RemoteMessage message,
     required Function(NotificationType type, String link) onTap,

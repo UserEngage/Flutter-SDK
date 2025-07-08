@@ -1,19 +1,26 @@
 import 'dart:math';
 
 import 'package:example/test_data.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_user_sdk/flutter_user_sdk.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  // Initialize SDK and pass arguments.
+
+  await Firebase.initializeApp();
+
+  final token = await FirebaseMessaging.instance.getToken();
+
   // Find your keys on https://user.com/pl/
-  // NOTE: ADD google-services.json file to run app.
+  // If You want to receive notifications from User.com, you must provide FCM token
+  // Otherwise You can use SDK only for sending events and registering users.
   await UserComSDK.instance.initialize(
-      mobileSdkKey: 'paste_your_key_from_user_com',
-      appDomain: 'app_domain_is_base_url',
-      fcmToken: 'your_token_fetched_from_firebase');
+    mobileSdkKey: 'paste_your_key_from_user_com',
+    appDomain: 'app_domain_is_base_url',
+    fcmToken: token,
+  );
 
   runApp(const UserComApp());
 }
@@ -28,6 +35,9 @@ class UserComApp extends StatefulWidget {
 class _UserComAppState extends State<UserComApp> {
   @override
   void initState() {
+    // flutter_user_sdk is not initialising FirebaseMessaging by itself to allow
+    // more flexibility in handling other messages that are not related to User.com.
+    // Thats why in this example we create a simple service that will listen for messages
     FirebaseSimpleService().initialize(context);
     super.initState();
   }
@@ -36,10 +46,9 @@ class _UserComAppState extends State<UserComApp> {
   Widget build(BuildContext context) {
     return MaterialApp(
       navigatorObservers: [
-        // Send screen events when entering new page
-        // If using custom routing, make Your own observer and
-        // use UserSDK.instance.sendScreenEvent()
-        // Dont forget to name Routes in settings
+        // Send screen event when pushing new page to navigator
+        // Create your own observer and use [UserComSDK.instance.sendScreenEvent]
+        // if custom bahaviour is needed
         UserSdkNavigatorObserver(),
       ],
       home: const MyHomePage(),
@@ -66,7 +75,7 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   void _sendCustomEventWithLargePayload() {
-    // Send event with nested json
+    // Send events with large nested jsons
     UserComSDK.instance.sendCustomEvent(
       eventName: 'user_interacted',
       data: testNestedPayloadData,
@@ -92,17 +101,20 @@ class _MyHomePageState extends State<MyHomePage> {
 
   void _registerUser() {
     // Send more informaton about user. You can add custom attributes.
-    // Attributes must be simple type.
     UserComSDK.instance.registerUser(
       customer: Customer(
-        userId: 'my_own_id_2',
+        userId: 'my_own_id_3',
         email: 'my_own_user@gmail.com',
+        gender: 2,
         firstName: 'Test',
         lastName: 'User',
+        phoneNumber: '+1234567890',
+        score: 100,
+        unsubscribed: true,
       )
         ..addCustomAttribute('country', 'USA')
         ..addCustomAttribute('has_benefits', true)
-        ..addCustomAttribute('sex', 'female')
+        ..addCustomAttribute('nick', 'freddy')
         ..addCustomAttribute('age', 22),
     );
   }
@@ -137,7 +149,6 @@ class _MyHomePageState extends State<MyHomePage> {
               },
               child: const Text('Go to Product Page'),
             ),
-            // Sending event and binding it to user
             ElevatedButton(
               onPressed: () => _sendCustomEvent(),
               child: const Text('Send custom event'),
@@ -146,12 +157,10 @@ class _MyHomePageState extends State<MyHomePage> {
               onPressed: () => _sendCustomEventWithLargePayload(),
               child: const Text('Send large payload event'),
             ),
-            // Sending product event and binding it to user
             ElevatedButton(
               onPressed: () => _sendProductEvent(),
               child: const Text('Send product event'),
             ),
-            // Add custom info to current anonymus user
             ElevatedButton(
               onPressed: () => _registerUser(),
               child: const Text('Register user'),
@@ -232,19 +241,19 @@ class FirebaseSimpleService {
     FirebaseMessaging.onMessage.listen(
       (event) {
         if (UserComSDK.instance.isUserComMessage(event.data)) {
-          // Displaying messages in [buildNotificationOnMessageReceived]
-          // can be customized using [onInAppMessage] and [onNotificationMessage]
-          UserComSDK.instance.buildNotificationOnMessageReceived(
+          // Displaying messages in [buildNotification]
+          // can be customized using [inAppMessageBuilder] and [pushMessageBuilder]
+          UserComSDK.instance.buildNotification(
             context: context,
             message: event,
-            onTap: (type, link) {
-              if (type == NotificationType.push) {
-                // Define here what to do on notification tap
-                // For example launchUrl and dismiss notification
-              }
-              if (type == NotificationType.inApp) {
-                // Define here what to do when user tap button that has link
-              }
+            onTap: (type, link) {},
+            inAppMessageBuilder: (inAppMessage) {
+              // Custom inApp message builder
+              // You can use it to display inApp message in your own way
+            },
+            pushMessageBuilder: (pushMessage) {
+              // Custom push message builder
+              // You can use it to display push message in your own way
             },
           );
         }
@@ -254,5 +263,6 @@ class FirebaseSimpleService {
     );
   }
 
+  @pragma('vm:entry-point')
   static Future<void> _onBackgroundMessage(RemoteMessage message) async {}
 }

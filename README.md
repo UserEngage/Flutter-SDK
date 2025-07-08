@@ -1,20 +1,15 @@
 # User.com Flutter SDK (flutter_user_sdk)
 
-User.com package helps developers track user activities inside the app. Flutter 2 & Flutter 3 versions are supported.
+User.com package helps developers track user activities inside the app.
 
 ## Features
 
-- Sending custom events
-- Sending product events
-- Sending screen events
-- Sending notification events
+- Displaying FCM notifications  (in-app notifications and mobile notifications)
+- Sending notification events and statistics
 - Registering and saving user data
-- Receiving FCM notifications  (in-app notifications and mobile notifications)
+- Sending analytics events - product, screen, custom types
 - Caching unsent requests due to no connection 
-- Resending request when connection is available 
-
-# Warning
-We are in proccess of migration from displaying notifications via flutter_local_notifications to native Firebase Messaging. Currently our plaftom do not support this and package will need additional steps to integrate which is described in Project Integration. We hope to migrate as soon as possible and make flutter_user_sdk simplier to integrate :)
+- Resending request when connection is available
 
 ## Installation
 
@@ -22,7 +17,6 @@ Add the newest version of a package to your project using:
 
 
     flutter pub add flutter_user_sdk
-
 
 ## Getting started
 
@@ -39,63 +33,56 @@ Add the newest version of a package to your project using:
 -  Find server key in the Firebase Project - go to the Settings -> Cloud Messaging
 -  Paste server key in User.com app: Settings -> App settings -> Advanced -> Mobile FCM keys
 
-## Project Integration
+### 🚨 Note
 
-#### IOS 
-
-Additional configuration is not required.
-#### Android
-    directory /android
-
-    buildscript {
-        ext.kotlin_version = '1.8.10'
-        repositories {
-            google()
-            mavenCentral()
-        }
-
-        dependencies {
-            classpath 'com.android.tools.build:gradle:7.4.0'
-            classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
-            classpath 'com.google.gms:google-services:4.3.3'
-        }
-    }
-
-    directory /android/app
-
-    android {
-        compileSdkVersion 33
-        ...
-    }
-
-
+Firebase Messaging is not integrated directly into the package to allow developers full control over message handling logic, including support for custom backends, multiple message sources, or environment-specific configurations (e.g., via flavors).
 
 ## Usage 
 Example how to use methods provided in SDK:
 ~~~
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  // Initialize SDK and pass arguments.
-  // Find your keys on https://user.com/en/
+
+  await Firebase.initializeApp();
+
+  final token = await FirebaseMessaging.instance.getToken();
+
+  // Find your keys on https://user.com/pl/
+  // If You want to receive notifications from User.com, you must provide FCM token
+  // Otherwise You can use SDK only for sending events and registering users.
   await UserComSDK.instance.initialize(
-    mobileSdkKey: [YOUR_KEY_FROM_USER_COM],
-    appDomain: [URL_FROM_USER_COM], // 'https://testapp.user.com/',
+    mobileSdkKey: 'paste_your_key_from_user_com',
+    appDomain: 'app_domain_is_base_url',
+    fcmToken: token,
   );
 
   runApp(const UserComApp());
 }
 
-class UserComApp extends StatelessWidget {
+class UserComApp extends StatefulWidget {
   const UserComApp({Key? key}) : super(key: key);
+
+  @override
+  State<UserComApp> createState() => _UserComAppState();
+}
+
+class _UserComAppState extends State<UserComApp> {
+  @override
+  void initState() {
+    // flutter_user_sdk is not initialising FirebaseMessaging by itself to allow
+    // more flexibility in handling other messages that are not related to User.com.
+    // Thats why in this example we create a simple service that will listen for messages
+    FirebaseSimpleService().initialize(context);
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       navigatorObservers: [
-        // Send screen events when entering new page
-        // If using custom routing, make your own observer and
-        // use UserSDK.instance.sendScreenEvent()
-        // Dont forget to name Routes in settings
+        // Send screen event when pushing new page to navigator
+        // Create your own observer and use [UserComSDK.instance.sendScreenEvent]
+        // if custom bahaviour is needed
         UserSdkNavigatorObserver(),
       ],
       home: const MyHomePage(),
@@ -122,7 +109,7 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   void _sendCustomEventWithLargePayload() {
-    // Send event with nested json
+    // Send events with large nested jsons
     UserComSDK.instance.sendCustomEvent(
       eventName: 'user_interacted',
       data: testNestedPayloadData,
@@ -147,26 +134,27 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   void _registerUser() {
-    // Send more informaton about the user. You can add custom attributes.
-    // Attributes must be simple type.
+    // Send more informaton about user. You can add custom attributes.
     UserComSDK.instance.registerUser(
       customer: Customer(
-        userId: 'my_own_id_2',
+        userId: 'my_own_id_3',
         email: 'my_own_user@gmail.com',
+        gender: 2,
         firstName: 'Test',
         lastName: 'User',
+        phoneNumber: '+1234567890',
+        score: 100,
+        unsubscribed: true,
       )
         ..addCustomAttribute('country', 'USA')
         ..addCustomAttribute('has_benefits', true)
-        ..addCustomAttribute('sex', 'female')
+        ..addCustomAttribute('nick', 'freddy')
         ..addCustomAttribute('age', 22),
     );
   }
 
   @override
   Widget build(BuildContext context) {
-    UserComSDK.instance.buildNotificationOnMessageReceived(context: context);
-
     return Scaffold(
       appBar: AppBar(title: const Text('User SDK Exapmle App')),
       body: Container(
@@ -195,7 +183,6 @@ class _MyHomePageState extends State<MyHomePage> {
               },
               child: const Text('Go to Product Page'),
             ),
-            // Sending event and binding it to user
             ElevatedButton(
               onPressed: () => _sendCustomEvent(),
               child: const Text('Send custom event'),
@@ -204,18 +191,16 @@ class _MyHomePageState extends State<MyHomePage> {
               onPressed: () => _sendCustomEventWithLargePayload(),
               child: const Text('Send large payload event'),
             ),
-            // Sending product event and binding it to user
             ElevatedButton(
               onPressed: () => _sendProductEvent(),
               child: const Text('Send product event'),
             ),
-            // Add custom info to current anonymous user
             ElevatedButton(
               onPressed: () => _registerUser(),
               child: const Text('Register user'),
             ),
             // Destroys reference to user and clear all cache.
-            // It also destroys reference to anonymous user and a new one will be created.
+            // It also destroy reference to anonymus User and a new one will be created.
             ElevatedButton(
               onPressed: () => UserComSDK.instance.logoutUser(),
               child: const Text('Logout user'),
@@ -226,7 +211,96 @@ class _MyHomePageState extends State<MyHomePage> {
     );
   }
 }
-~~~
+
+// Simplified service for handling User.com messages that are pushed via FirebaseMessaging.
+// Remember to fetch FCM token and pass it to [UserSDK.instance.initialize()].
+class FirebaseSimpleService {
+  FirebaseSimpleService._();
+
+  factory FirebaseSimpleService() {
+    return _instance;
+  }
+
+  static final FirebaseSimpleService _instance = FirebaseSimpleService._();
+
+  // Init all Firebase methods
+  void initialize(BuildContext context) {
+    onInitialMessage();
+    onMessageOpenedApp();
+    onMessage(context);
+    FirebaseMessaging.onBackgroundMessage(_onBackgroundMessage);
+  }
+
+  void onInitialMessage() async {
+    final remoteMessage = await FirebaseMessaging.instance.getInitialMessage();
+    if (remoteMessage == null) return;
+
+    if (UserComSDK.instance.isUserComMessage(remoteMessage.data)) {
+      final message = UserComSDK.instance.getPushMessage(remoteMessage.data);
+
+      if (message != null) {
+        UserComSDK.instance.notificationClickedEvent(
+          id: message.id,
+          type: message.type,
+        );
+
+        // process with User.com Push Message
+      }
+    }
+
+    // process other Firebase Messages
+  }
+
+  void onMessageOpenedApp() {
+    FirebaseMessaging.onMessageOpenedApp.listen(
+      (event) {
+        if (UserComSDK.instance.isUserComMessage(event.data)) {
+          final message = UserComSDK.instance.getPushMessage(event.data);
+
+          if (message != null) {
+            UserComSDK.instance.notificationClickedEvent(
+              id: message.id,
+              type: message.type,
+            );
+            // process with User.com Push Message
+          }
+        }
+      },
+
+      // process other Firebase Messages
+    );
+  }
+
+  void onMessage(BuildContext context) {
+    FirebaseMessaging.onMessage.listen(
+      (event) {
+        if (UserComSDK.instance.isUserComMessage(event.data)) {
+          // Displaying messages in [buildNotificationOnMessageReceived]
+          // can be customized using [inAppMessageBuilder] and [pushMessageBuilder]
+          UserComSDK.instance.buildNotificationOnMessageReceived(
+            context: context,
+            message: event,
+            onTap: (type, link) {
+              if (type == NotificationType.push) {
+                // Define here what to do on notification tap
+                // For example launchUrl and dismiss notification
+              }
+              if (type == NotificationType.inApp) {
+                // Define here what to do when user tap button that has link
+              }
+            },
+          );
+        }
+
+        // ... Process on other messages coming from FCM
+      },
+    );
+  }
+}
+
+@pragma('vm:entry-point')
+Future<void> _onBackgroundMessage(RemoteMessage message) async {}
+
 
 ## License
 

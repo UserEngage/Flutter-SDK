@@ -100,11 +100,6 @@ class NotificationBuilder {
         onTap?.call(message.link);
       },
     ).show(context);
-    repository.sendNotificationEvent(
-      id: message.id,
-      action: NotificationAction.displayed,
-      type: NotificationType.push,
-    );
   }
 
   static Future<void> launchCustomTab({

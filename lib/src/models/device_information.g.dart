@@ -21,27 +21,18 @@ DeviceAndroidInformation _$DeviceAndroidInformationFromJson(
     );
 
 Map<String, dynamic> _$DeviceAndroidInformationToJson(
-    DeviceAndroidInformation instance) {
-  final val = <String, dynamic>{
-    'lib_version': instance.libraryVersion,
-    'os_type': instance.osType,
-    'version': instance.version,
-    'sdk': instance.sdk,
-    'device': instance.device,
-    'model': instance.model,
-    'manufacturer': instance.manufacturer,
-  };
-
-  void writeNotNull(String key, dynamic value) {
-    if (value != null) {
-      val[key] = value;
-    }
-  }
-
-  writeNotNull('fcm_key', instance.fcmToken);
-  writeNotNull('is_root', instance.isRoot);
-  return val;
-}
+        DeviceAndroidInformation instance) =>
+    <String, dynamic>{
+      'lib_version': instance.libraryVersion,
+      'os_type': instance.osType,
+      'version': instance.version,
+      'sdk': instance.sdk,
+      'device': instance.device,
+      'model': instance.model,
+      'manufacturer': instance.manufacturer,
+      if (instance.fcmToken case final value?) 'fcm_key': value,
+      if (instance.isRoot case final value?) 'is_root': value,
+    };
 
 DeviceIosInformation _$DeviceIosInformationFromJson(
         Map<String, dynamic> json) =>
@@ -58,24 +49,15 @@ DeviceIosInformation _$DeviceIosInformationFromJson(
     );
 
 Map<String, dynamic> _$DeviceIosInformationToJson(
-    DeviceIosInformation instance) {
-  final val = <String, dynamic>{
-    'lib_version': instance.libraryVersion,
-    'os_type': instance.osType,
-    'version': instance.version,
-    'sdk': instance.sdk,
-    'device': instance.device,
-    'model': instance.model,
-    'manufacturer': instance.manufacturer,
-  };
-
-  void writeNotNull(String key, dynamic value) {
-    if (value != null) {
-      val[key] = value;
-    }
-  }
-
-  writeNotNull('fcm_key', instance.fcmToken);
-  val['identifier'] = instance.identifier;
-  return val;
-}
+        DeviceIosInformation instance) =>
+    <String, dynamic>{
+      'lib_version': instance.libraryVersion,
+      'os_type': instance.osType,
+      'version': instance.version,
+      'sdk': instance.sdk,
+      'device': instance.device,
+      'model': instance.model,
+      'manufacturer': instance.manufacturer,
+      if (instance.fcmToken case final value?) 'fcm_key': value,
+      'identifier': instance.identifier,
+    };
