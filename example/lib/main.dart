@@ -18,7 +18,7 @@ void main() async {
   // Otherwise You can use SDK only for sending events and registering users.
   await UserComSDK.instance.initialize(
     mobileSdkKey: 'paste_your_key_from_user_com',
-    appDomain: 'app_domain_is_base_url',
+    baseUrl: 'base_url_from_user_com',
     fcmToken: token,
   );
 
@@ -68,9 +68,7 @@ class _MyHomePageState extends State<MyHomePage> {
     // Send event with data that can be converted to simple types
     UserComSDK.instance.sendCustomEvent(
       eventName: 'user_interacted',
-      data: <String, dynamic>{
-        'button_id': Random.secure().nextInt(999),
-      },
+      data: <String, dynamic>{'button_id': Random.secure().nextInt(999)},
     );
   }
 
@@ -93,7 +91,7 @@ class _MyHomePageState extends State<MyHomePage> {
           'ref_number': '222',
           'time_spent_in_mins': Random().nextInt(999),
           'converted': true,
-          'variant_id': 'qaz123'
+          'variant_id': 'qaz123',
         },
       ),
     );
@@ -102,20 +100,21 @@ class _MyHomePageState extends State<MyHomePage> {
   void _registerUser() {
     // Send more informaton about user. You can add custom attributes.
     UserComSDK.instance.registerUser(
-      customer: Customer(
-        userId: 'my_own_id_3',
-        email: 'my_own_user@gmail.com',
-        gender: 2,
-        firstName: 'Test',
-        lastName: 'User',
-        phoneNumber: '+1234567890',
-        score: 100,
-        unsubscribed: true,
-      )
-        ..addCustomAttribute('country', 'USA')
-        ..addCustomAttribute('has_benefits', true)
-        ..addCustomAttribute('nick', 'freddy')
-        ..addCustomAttribute('age', 22),
+      customer:
+          Customer(
+              userId: 'my_own_id_3',
+              email: 'my_own_user@gmail.com',
+              gender: 2,
+              firstName: 'Test',
+              lastName: 'User',
+              phoneNumber: '+1234567890',
+              score: 100,
+              unsubscribed: true,
+            )
+            ..addCustomAttribute('country', 'USA')
+            ..addCustomAttribute('has_benefits', true)
+            ..addCustomAttribute('nick', 'freddy')
+            ..addCustomAttribute('age', 22),
     );
   }
 
@@ -238,29 +237,27 @@ class FirebaseSimpleService {
   }
 
   void onMessage(BuildContext context) {
-    FirebaseMessaging.onMessage.listen(
-      (event) {
-        if (UserComSDK.instance.isUserComMessage(event.data)) {
-          // Displaying messages in [buildNotification]
-          // can be customized using [inAppMessageBuilder] and [pushMessageBuilder]
-          UserComSDK.instance.buildNotification(
-            context: context,
-            message: event,
-            onTap: (type, link) {},
-            inAppMessageBuilder: (inAppMessage) {
-              // Custom inApp message builder
-              // You can use it to display inApp message in your own way
-            },
-            pushMessageBuilder: (pushMessage) {
-              // Custom push message builder
-              // You can use it to display push message in your own way
-            },
-          );
-        }
+    FirebaseMessaging.onMessage.listen((event) {
+      if (UserComSDK.instance.isUserComMessage(event.data)) {
+        // Displaying messages in [buildNotification]
+        // can be customized using [inAppMessageBuilder] and [pushMessageBuilder]
+        UserComSDK.instance.buildNotification(
+          context: context,
+          data: event.data,
+          onTap: (type, link) {},
+          inAppMessageBuilder: (inAppMessage) {
+            // Custom inApp message builder
+            // You can use it to display inApp message in your own way
+          },
+          pushMessageBuilder: (pushMessage) {
+            // Custom push message builder
+            // You can use it to display push message in your own way
+          },
+        );
+      }
 
-        // ... Process on other messages coming from FCM
-      },
-    );
+      // ... Process on other messages coming from FCM
+    });
   }
 
   @pragma('vm:entry-point')

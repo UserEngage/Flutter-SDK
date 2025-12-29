@@ -1,21 +1,12 @@
 import 'package:flutter_user_sdk/flutter_user_sdk.dart';
 import 'package:flutter_user_sdk/src/notifications/notification_adapter.dart';
-import 'package:json_annotation/json_annotation.dart';
 
-part 'notification_message.g.dart';
-
-@JsonSerializable()
 class PushNotificationMessage extends UserComMessage {
-  @JsonKey(name: 'id')
   final String id;
-  @JsonKey(name: 'title')
   final String title;
-  @JsonKey(name: 'message')
   final String message;
-  @JsonKey(name: 'link')
   final String link;
   // ignore: deprecated_member_use
-  @JsonKey(ignore: true)
   final NotificationType type;
 
   PushNotificationMessage(
@@ -27,8 +18,21 @@ class PushNotificationMessage extends UserComMessage {
 
   bool get isLinkNotEmpty => link != 'None';
 
-  factory PushNotificationMessage.fromJson(Map<String, dynamic> json) =>
-      _$PushNotificationMessageFromJson(json);
+  factory PushNotificationMessage.fromJson(Map<String, dynamic> json) {
+    return PushNotificationMessage(
+      json['id'] as String? ?? '',
+      json['title'] as String? ?? '',
+      json['message'] as String? ?? '',
+      json['link'] as String? ?? '',
+    );
+  }
 
-  Map<String, dynamic> toJson() => _$PushNotificationMessageToJson(this);
+  Map<String, dynamic> toJson() {
+    return <String, dynamic>{
+      'id': id,
+      'title': title,
+      'message': message,
+      'link': link,
+    };
+  }
 }

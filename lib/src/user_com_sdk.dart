@@ -1,6 +1,4 @@
 import 'dart:developer';
-
-import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_user_sdk/src/data/cache_repository.dart';
 import 'package:flutter_user_sdk/src/data/repository.dart';
@@ -40,7 +38,7 @@ class UserComSDK {
   String? _integrationsApiKey;
 
   /// Url address where user.com app is created. For example: 'https://testapp.user.com/'
-  late String _appDomain;
+  late String _baseUrl;
 
   late Repository _repository;
 
@@ -59,13 +57,13 @@ class UserComSDK {
   Future<void> initialize({
     required String mobileSdkKey,
     String? integrationsApiKey,
-    required String appDomain,
+    required String baseUrl,
     String? fcmToken,
     bool enableLogging = true,
   }) async {
     _mobileSdkKey = mobileSdkKey;
     _integrationsApiKey = integrationsApiKey;
-    _appDomain = appDomain;
+    _baseUrl = baseUrl;
     _enableLogging = enableLogging;
     _fcmToken = fcmToken;
 
@@ -84,9 +82,9 @@ class UserComSDK {
         await _registerAnonymousUserSession();
       },
       onConnectionRestored: () async {
-        RequestsRetryService(_cacheRepository).resendRequests(
-          onUserKeyChanged: () => _setupClient(),
-        );
+        RequestsRetryService(
+          _cacheRepository,
+        ).resendRequests(onUserKeyChanged: () => _setupClient());
       },
     );
   }
@@ -124,10 +122,7 @@ class UserComSDK {
     required Map<String, dynamic> data,
   }) async {
     await _repository.sendCustomEvent(
-      CustomEvent(
-        event: eventName,
-        data: data,
-      ),
+      CustomEvent(event: eventName, data: data),
     );
   }
 
@@ -137,20 +132,14 @@ class UserComSDK {
   ///
   /// If project uses different type of routing then create custom observer
   /// And trigger UserSDK.instance.sendScreenEvent('name');
-  Future<void> sendScreenEvent({
-    required String screenName,
-  }) async {
-    await _repository.sendScreenEvent(
-      ScreenEvent(screenName: screenName),
-    );
+  Future<void> sendScreenEvent({required String screenName}) async {
+    await _repository.sendScreenEvent(ScreenEvent(screenName: screenName));
   }
 
   /// Create ProductEvent object and pass there attributes You want to collect
   /// [ProductEvent] requires productId and [ProductEventType]
   /// Pass parameters as Map. It must be parsed to simple types.
-  Future<void> sendProductEvent({
-    required ProductEvent event,
-  }) async {
+  Future<void> sendProductEvent({required ProductEvent event}) async {
     await _repository.sendProductEvent(event);
   }
 
@@ -161,7 +150,9 @@ class UserComSDK {
   Future<void> logoutUser() async {
     await _repository.logoutUser();
     await _cacheRepository.clearStorage();
-    log('Logout successful. Creating new anonymous session to track user activity');
+    log(
+      'Logout successful. Creating new anonymous session to track user activity',
+    );
     await _registerAnonymousUserSession(fcmToken: _fcmToken);
   }
 
@@ -183,13 +174,13 @@ class UserComSDK {
   /// [onTap] is called when user interacts with push or inApp notification
   void buildNotification({
     required BuildContext context,
-    required RemoteMessage message,
+    required Map<String, dynamic> data,
     required Function(NotificationType type, String link) onTap,
     Function(InAppMessageModel)? inAppMessageBuilder,
     Function(PushNotificationMessage)? pushMessageBuilder,
   }) {
-    if (NotificationAdapter.isUserComMessage(message.data)) {
-      final notificationAdapter = NotificationAdapter.fromJson(message.data);
+    if (NotificationAdapter.isUserComMessage(data)) {
+      final notificationAdapter = NotificationAdapter.fromJson(data);
 
       if (notificationAdapter.type == NotificationType.inApp) {
         final inAppMessage = notificationAdapter.message as InAppMessageModel;
@@ -212,7 +203,7 @@ class UserComSDK {
         if (pushMessageBuilder != null) {
           pushMessageBuilder(pushMessage);
         } else {
-          if (message.from == _notificationChannelKey) {
+          if (data['from'] == _notificationChannelKey) {
             NotificationBuilder.launchCustomTab(
               repository: _repository,
               message: pushMessage,
@@ -252,7 +243,7 @@ class UserComSDK {
       cacheRepository: _cacheRepository,
       mobileSdkKey: _mobileSdkKey,
       integrationsApiKey: _integrationsApiKey,
-      appDomain: _appDomain,
+      baseUrl: _baseUrl,
       userKey: _cacheRepository.getUserKey(),
       enableLogging: _enableLogging,
     );

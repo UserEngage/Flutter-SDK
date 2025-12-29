@@ -2,26 +2,15 @@ import 'dart:io';
 
 import 'package:advertising_id/advertising_id.dart';
 import 'package:device_info_plus/device_info_plus.dart';
-import 'package:json_annotation/json_annotation.dart';
-
-part 'device_information.g.dart';
 
 abstract class DeviceInformation {
-  @JsonKey(name: 'lib_version')
   late String libraryVersion;
-  @JsonKey(name: 'os_type')
   late String osType;
-  @JsonKey(name: 'version')
   late String version;
-  @JsonKey(name: 'sdk')
   late String sdk;
-  @JsonKey(name: 'device')
   late String device;
-  @JsonKey(name: 'model')
   late String model;
-  @JsonKey(name: 'manufacturer')
   String manufacturer;
-  @JsonKey(name: 'fcm_key', includeIfNull: false)
   final String? fcmToken;
 
   DeviceInformation({
@@ -75,65 +64,96 @@ abstract class DeviceInformation {
   }
 }
 
-@JsonSerializable()
 class DeviceAndroidInformation extends DeviceInformation {
-  @JsonKey(name: 'is_root', includeIfNull: false)
   final bool? isRoot;
 
   DeviceAndroidInformation({
-    required String libraryVersion,
-    required String osType,
-    required String version,
-    required String sdk,
-    required String device,
-    required String model,
-    required String manufacturer,
-    String? fcmToken,
+    required super.libraryVersion,
+    required super.osType,
+    required super.version,
+    required super.sdk,
+    required super.device,
+    required super.model,
+    required super.manufacturer,
+    super.fcmToken,
     this.isRoot,
-  }) : super(
-          libraryVersion: libraryVersion,
-          osType: osType,
-          version: version,
-          sdk: sdk,
-          device: device,
-          model: model,
-          manufacturer: manufacturer,
-          fcmToken: fcmToken,
-        );
+  });
 
-  Map<String, dynamic> toJson() => _$DeviceAndroidInformationToJson(this);
+  Map<String, dynamic> toJson() {
+    final map = <String, dynamic>{
+      'lib_version': libraryVersion,
+      'os_type': osType,
+      'version': version,
+      'sdk': sdk,
+      'device': device,
+      'model': model,
+      'manufacturer': manufacturer,
+    };
+    if (fcmToken != null) map['fcm_key'] = fcmToken;
+    if (isRoot != null) map['is_root'] = isRoot;
+    return map;
+  }
 
-  factory DeviceAndroidInformation.fromJson(Map<String, dynamic> json) =>
-      _$DeviceAndroidInformationFromJson(json);
+  factory DeviceAndroidInformation.fromJson(Map<String, dynamic> json) {
+    return DeviceAndroidInformation(
+      libraryVersion:
+          json['lib_version'] as String? ?? DeviceInformation.libVersion,
+      osType: json['os_type'] as String? ?? DeviceInformation.unknown,
+      version: json['version'] as String? ?? DeviceInformation.unknown,
+      sdk: json['sdk'] as String? ?? DeviceInformation.unknown,
+      device: json['device'] as String? ?? DeviceInformation.unknown,
+      model: json['model'] as String? ?? DeviceInformation.unknown,
+      manufacturer:
+          json['manufacturer'] as String? ?? DeviceInformation.unknown,
+      fcmToken: json['fcm_key'] as String?,
+      isRoot: json['is_root'] as bool?,
+    );
+  }
 }
 
-@JsonSerializable()
 class DeviceIosInformation extends DeviceInformation {
   final String identifier;
 
   DeviceIosInformation({
-    required String libraryVersion,
-    required String osType,
-    required String version,
-    required String sdk,
-    required String device,
-    required String model,
-    required String manufacturer,
-    String? fcmToken,
+    required super.libraryVersion,
+    required super.osType,
+    required super.version,
+    required super.sdk,
+    required super.device,
+    required super.model,
+    required super.manufacturer,
+    super.fcmToken,
     required this.identifier,
-  }) : super(
-          libraryVersion: libraryVersion,
-          osType: osType,
-          version: version,
-          sdk: sdk,
-          device: device,
-          model: model,
-          manufacturer: manufacturer,
-          fcmToken: fcmToken,
-        );
+  });
 
-  Map<String, dynamic> toJson() => _$DeviceIosInformationToJson(this);
+  Map<String, dynamic> toJson() {
+    final map = <String, dynamic>{
+      'lib_version': libraryVersion,
+      'os_type': osType,
+      'version': version,
+      'sdk': sdk,
+      'device': device,
+      'model': model,
+      'manufacturer': manufacturer,
+      'identifier': identifier,
+    };
+    if (fcmToken != null) map['fcm_key'] = fcmToken;
+    return map;
+  }
 
-  factory DeviceIosInformation.fromJson(Map<String, dynamic> json) =>
-      _$DeviceIosInformationFromJson(json);
+  factory DeviceIosInformation.fromJson(Map<String, dynamic> json) {
+    return DeviceIosInformation(
+      libraryVersion:
+          json['lib_version'] as String? ?? DeviceInformation.libVersion,
+      osType: json['os_type'] as String? ?? DeviceInformation.unknown,
+      version: json['version'] as String? ?? DeviceInformation.unknown,
+      sdk: json['sdk'] as String? ?? DeviceInformation.unknown,
+      device: json['device'] as String? ?? DeviceInformation.unknown,
+      model: json['model'] as String? ?? DeviceInformation.unknown,
+      manufacturer:
+          json['manufacturer'] as String? ?? DeviceInformation.unknown,
+      fcmToken: json['fcm_key'] as String?,
+      identifier: json['identifier'] as String? ?? DeviceInformation.unknown,
+    );
+  }
 }
