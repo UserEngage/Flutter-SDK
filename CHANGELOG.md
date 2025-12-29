@@ -78,3 +78,11 @@
 - Extend Customer model
 - Remove unsupported API call with notification displayed
 - buildNotificationOnMessageReceived -> buildNotification
+
+# [1.1.0]
+
+- Bump package versions
+- Update example directory
+- Removed build_runner code generations
+- Removed redundant libraries - retrofit, json_serialization, firebase_notifications
+- Updated function param from appDomain -> baseUrl
