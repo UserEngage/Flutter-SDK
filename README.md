@@ -277,9 +277,9 @@ class FirebaseSimpleService {
         if (UserComSDK.instance.isUserComMessage(event.data)) {
           // Displaying messages in [buildNotificationOnMessageReceived]
           // can be customized using [inAppMessageBuilder] and [pushMessageBuilder]
-          UserComSDK.instance.buildNotificationOnMessageReceived(
+          UserComSDK.instance.buildNotification(
             context: context,
-            message: event,
+            data: event.data,
             onTap: (type, link) {
               if (type == NotificationType.push) {
                 // Define here what to do on notification tap
